@@ -1,4 +1,4 @@
-from msilib.schema import Control
+#from msilib.schema import Control
 import tkinter as tk
 from tkinter import ttk, IntVar
 from tkinter import Tk, font
