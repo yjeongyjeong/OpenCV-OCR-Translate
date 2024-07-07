@@ -61,4 +61,10 @@ class DataManager:
         print(DataManager.curr_path)
         print(default_image_path)
         DataManager.folder_data = FolderData(default_image_path)
+        
+    @classmethod
+    def reset_work_folder(cls, target_folder='./image'):
+        print ('[DataManager.reset] reset, target=', target_folder)
+        cls.target_folder = os.path.abspath(target_folder)
+        
 
