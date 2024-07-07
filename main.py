@@ -1,5 +1,5 @@
-from oot.gui.gui_main import App
+from oot.gui.gui_main import GuiManager
 
 if __name__ == "__main__":
-    app = App()
-    app.mainloop()
+    gui = GuiManager()
+    gui.mainloop()

@@ -4,7 +4,7 @@ from PIL import Image, ImageTk
 import os
 
 # 메인 애플리케이션 클래스
-class App(tk.Tk):
+class GuiManager(tk.Tk):
     def __init__(self):
         super().__init__()
 
