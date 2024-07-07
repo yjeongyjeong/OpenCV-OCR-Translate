@@ -93,7 +93,9 @@ class MiddleFrame:
 
     @classmethod
     def redrawCanvasImages(cls):
-        pass
+        print ('[MiddleFrame.resizeCanvasImages] called...')
+        cls.src_canvas_worker.drawImage()
+        cls.out_canvas_worker.drawImage()
 
     @classmethod
     def getAdaptedImageSize(cls, img_w, img_h, canvas_w, canvas_h):
@@ -101,7 +103,16 @@ class MiddleFrame:
 
     @classmethod
     def resetCanvasImages(cls, work_file):
-        pass
+        print ('[MiddleFrame] resetCanvasImages() called...')
+        # TODO: out_file 수정해야함
+        src_file = work_file
+        out_file = src_file
+
+        cls.src_canvas_worker.changeImageFile(src_file)
+        cls.out_canvas_worker.changeImageFile(out_file)
+
+        cls.src_canvas_worker.drawImage()
+        cls.out_canvas_worker.drawImage()
 
     @classmethod
     def removeSelectedTexts(cls):
