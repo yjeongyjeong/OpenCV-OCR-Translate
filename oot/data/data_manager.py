@@ -55,10 +55,10 @@ class TextData:
 
 class DataManager:
     folder_data = None
-    def __init__(self):
-        curr_path = os.getcwd()
-        default_image_path = curr_path + os.sep + "image"
-        print(curr_path)
+    def init():
+        DataManager.curr_path = os.getcwd()
+        default_image_path = DataManager.curr_path + os.sep + "image"
+        print(DataManager.curr_path)
         print(default_image_path)
         DataManager.folder_data = FolderData(default_image_path)
 
