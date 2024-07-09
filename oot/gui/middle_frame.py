@@ -69,10 +69,8 @@ class MiddleFrame:
         right_canvas = tk.Canvas(mid_frm, bg='lightgray')
         right_canvas.grid(row=0, column=1, sticky=tk.E+tk.W+tk.N+tk.S)
 
-        img_folder = DataManager.folder_data.folder
         src_file = DataManager.folder_data.work_file.name
-        # TODO: 데이터매니저에서 outfile을 리턴해주는 함수 필요함
-        out_file = src_file
+        out_file = DataManager.get_output_file()
 
         # Reference :
         # - https://www.youtube.com/watch?v=xiGQD2J47nA
@@ -104,9 +102,8 @@ class MiddleFrame:
     @classmethod
     def resetCanvasImages(cls, work_file):
         print ('[MiddleFrame] resetCanvasImages() called...')
-        # TODO: out_file 수정해야함
         src_file = work_file
-        out_file = src_file
+        out_file = DataManager.get_output_file()
 
         cls.src_canvas_worker.changeImageFile(src_file)
         cls.out_canvas_worker.changeImageFile(out_file)
