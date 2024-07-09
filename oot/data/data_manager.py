@@ -1,6 +1,7 @@
 import glob
 import os
 from typing import cast
+import shutil
 
 # FolderData > FileData > TextData
 
@@ -61,10 +62,38 @@ class DataManager:
         print(DataManager.curr_path)
         print(default_image_path)
         DataManager.folder_data = FolderData(default_image_path)
+
+        DataManager.reset_work_folder()
         
     @classmethod
     def reset_work_folder(cls, target_folder='./image'):
         print ('[DataManager.reset] reset, target=', target_folder)
         cls.target_folder = os.path.abspath(target_folder)
-        
 
+        cls.__init_output_folder()
+
+    @classmethod
+    def __init_output_folder(cls):
+        print ('[DataManager] initOutputFiles() called...')
+        target_folder = cls.folder_data.folder
+        print ('[DataManager] initOutputFiles() : target_folder = ', target_folder)
+
+        output_folder = os.path.join(target_folder + os.sep + '__OUTPUT_FILES__')
+        print ('[DataManager] initOutputFiles() : output_folder = ', output_folder)
+
+        # create output folder if not exist
+        if os.path.isdir(output_folder) == False:
+            os.makedirs(output_folder)
+            print ('[DataManager] initOutputFiles() : output_folder newly created!')
+        
+        if target_folder == None or len(target_folder) == 0:
+            print ('[DataManager] initOutputFiles() : no source files!')
+            return
+        
+        # copy files to output folder if source image file doesn't exist in output folder
+        target_images = [file_data.name for file_data in cls.folder_data.files]
+        for src_file in target_images:
+            src_file_name = os.path.basename(src_file)
+            out_file = os.path.join(cls.target_folder, '__OUTPUT_FILES__', src_file_name)
+            if not os.path.isfile(out_file):
+                shutil.copy(src_file, out_file)
