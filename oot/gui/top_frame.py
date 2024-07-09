@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 from tkinter import ttk
 import sys
@@ -31,4 +32,8 @@ class TopFrame:
         
     @classmethod    
     def change_work_file(cls, work_file=None):
-        cls.label_curr_file_name.config(text=work_file)
+        print("work_file_name>> :",work_file)
+        
+        if cls.label_curr_file_name:
+            cls.label_curr_file_name.config(text=work_file)
+    
