@@ -75,7 +75,7 @@ class DataManager:
     @classmethod
     def __init_output_folder(cls):
         print ('[DataManager] initOutputFiles() called...')
-        target_folder = cls.folder_data.folder
+        target_folder = cls.target_folder 
         print ('[DataManager] initOutputFiles() : target_folder = ', target_folder)
 
         output_folder = os.path.join(target_folder + os.sep + '__OUTPUT_FILES__')
@@ -97,3 +97,8 @@ class DataManager:
             out_file = os.path.join(cls.target_folder, '__OUTPUT_FILES__', src_file_name)
             if not os.path.isfile(out_file):
                 shutil.copy(src_file, out_file)
+                
+                
+    @classmethod
+    def update_folder_path(cls, folder_path):
+        cls.folder_data = FolderData(folder_path)
