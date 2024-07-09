@@ -97,5 +97,13 @@ class DataManager:
             if not os.path.isfile(out_file):
                 shutil.copy(src_file, out_file)
                 
-                
+    @classmethod
+    def get_output_file(cls):
+        print ('[DataManager] get_output_file() called...')
+
+        out_file_dir = cls.folder_data.folder
+        out_file_name = os.path.basename(cls.folder_data.work_file.name)
+        out_file = os.path.join(out_file_dir, '__OUTPUT_FILES__', out_file_name)
+        
+        return out_file
     
