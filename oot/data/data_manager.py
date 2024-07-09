@@ -70,10 +70,10 @@ class DataManager:
         print ('[DataManager.reset] reset, target=', target_folder)
         cls.target_folder = os.path.abspath(target_folder)
 
-        cls.__init_Output_folder()
+        cls.__init_output_folder()
 
     @classmethod
-    def __init_Output_folder(cls):
+    def __init_output_folder(cls):
         print ('[DataManager] initOutputFiles() called...')
         target_folder = cls.folder_data.folder
         print ('[DataManager] initOutputFiles() : target_folder = ', target_folder)
