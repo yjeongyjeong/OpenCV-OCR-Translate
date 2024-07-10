@@ -7,6 +7,7 @@ import sys
 sys.path.append('.')
 from oot.data.data_manager import DataManager
 from oot.gui.top_frame import TopFrame
+from oot.gui.middle_frame import MiddleFrame
 
 def __check_work_folder(work_dir):
     # check if image exists
@@ -30,4 +31,5 @@ def clicked_change_folder():
             # UI 업데이트
             TopFrame.change_work_file(DataManager.folder_data.get_work_file().name)
 
-            
+            # middle 이미지 업데이트
+            MiddleFrame.reset_canvas_images(DataManager.folder_data.get_work_file().name)
