@@ -107,3 +107,31 @@ class DataManager:
         
         return out_file
     
+    @classmethod
+    def get_prev_imagefile(cls, img_file):
+        print('[DataManager] getPrevImageFile() called!!...')
+        for i in range(len(cls.folder_data.files)):
+            print('[DataManager] getPrevImageFile() i=', i, cls.folder_data.files[i].name)
+            if cls.folder_data.files[i].name == img_file.name:
+                if i != 0:
+                    print('[DataManager] getPrevImageFile() - image found : ', cls.folder_data.files[i-1].name)
+                    cls.folder_data.work_file = cls.folder_data.files[i-1] 
+                    return cls.folder_data.files[i-1]
+                else:
+                    break
+        print('[DataManager] getPrevImageFile() - image not found!!')
+        return None
+
+    @classmethod
+    def get_next_imagefile(cls, img_file):
+        print ('[DataManager] getNextImageFile() called!!...')
+        for i in range(len(cls.folder_data.files)):
+            print ('[DataManager] getNextImageFile() i=', i, ', curr_file=', img_file, ', compare=', cls.folder_data.files[i].name)
+            if cls.folder_data.files[i].name == img_file.name:
+                if (i+1) < len(cls.folder_data.files):
+                    print ('[DataManager] getNextImageFile() - image found : ', cls.folder_data.files[i+1].name)
+                    return cls.folder_data.files[i+1]
+                else:
+                    break
+        print ('[DataManager] getNextImageFile() - image not found!!')
+        return None
