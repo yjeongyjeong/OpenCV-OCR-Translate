@@ -17,7 +17,7 @@ from tkinter import END, scrolledtext
 def choose_color():
     # variable to store hexadecimal code of color
     color_code = colorchooser.askcolor(title ="Choose color") 
-    LowFrame.resetColorOfButtonInWriteTab(color=color_code[1])
+    LowFrame.reset_color_of_button_in_write_tab(color=color_code[1])
 #------------------------------------------------------------------------------
 # Low frame : low side tabbed pane (tools)
 #------------------------------------------------------------------------------
@@ -27,7 +27,7 @@ class LowFrame:
         # create a notebook
         low_frm = ttk.Notebook(root)
         LowFrame.notebook = low_frm
-        low_frm.bind("<<NotebookTabChanged>>", self.__tabChanged)
+        low_frm.bind("<<NotebookTabChanged>>", self.__tab_changed)
         
         low_frm.pack(pady=10, fill='both')
         low_frm.config(height=220)
@@ -54,26 +54,26 @@ class LowFrame:
         self.__init_write_tab(write_tab)
 
     @classmethod
-    def getStatusOfCheckListInRemoveTab(cls, idx):
+    def get_status_of_check_list_in_remove_tab(cls, idx):
         pass
 
     @classmethod
-    def resetRemoveTabData(cls, texts=None):
+    def reset_remove_tab_data(cls, texts=None):
         pass
 
     @classmethod
-    def resetWriteTabData(cls, texts=None):
+    def reset_write_tab_data(cls, texts=None):
         pass
 
     @classmethod
-    def resetTranslationTargetTextInWriteTab(cls, text=None):
+    def reset_translation_target_text_in_write_tab(cls, text=None):
         pass
 
     @classmethod
-    def resetColorOfButtonInWriteTab(cls, color='#FFFF00'):
+    def reset_color_of_button_in_write_tab(cls, color='#FFFF00'):
         pass
     
-    def __tabChanged(self, event):
+    def __tab_changed(self, event):
         tab_idx = LowFrame.notebook.index(LowFrame.notebook.select())
         print(f'tab_idx={tab_idx}')
         
@@ -85,7 +85,7 @@ class LowFrame:
                 target_string = LowFrame.write_tab_text_org.get("1.0",'end-1c')
                 if selected_idx == 0 and target_string is None or len(target_string) == 0:
                     # write text to original text area of write tab in low frame
-                    LowFrame.resetTranslationTargetTextInWriteTab(radiobuttons.text_list[selected_idx])
+                    LowFrame.reset_translation_target_text_in_write_tab(radiobuttons.text_list[selected_idx])
 
         
         
@@ -208,7 +208,7 @@ class scrollable_list(tk.Frame):
         self.text.pack(side="left", fill="both", expand=True)
         self.list_values = []
 
-    def __getIndexedText(self, idx, text):
+    def __get_indexed_text(self, idx, text):
         return str(idx) + '|' + text
     
     def reset(self, text_list=None):
@@ -231,10 +231,10 @@ class scrollable_list(tk.Frame):
                     # Reference : checkbutton example getting value in callback
                     # - https://arstechnica.com/civis/viewtopic.php?t=69728
                     from oot.control.low_write_control import selectedCheckListInRemoveTab
-                    cb = tk.Checkbutton(self, text=t, command=lambda i=self.__getIndexedText(idx,t): selectedCheckListInRemoveTab(i), var=self.list_values[idx])
+                    cb = tk.Checkbutton(self, text=t, command=lambda i=self.__get_indexed_text(idx,t): selectedCheckListInRemoveTab(i), var=self.list_values[idx])
                 elif self.list_type == scrollable_list_type.RADIO_BUTTON:
                     from oot.control.low_write_control import selectedRadioListInRemoveTab
-                    cb = tk.Radiobutton(self, text=t, command=lambda i=self.__getIndexedText(idx,t): selectedRadioListInRemoveTab(i), variable=self.radio_value, value=idx)
+                    cb = tk.Radiobutton(self, text=t, command=lambda i=self.__get_indexed_text(idx,t): selectedRadioListInRemoveTab(i), variable=self.radio_value, value=idx)
                 else:
                     cb = tk.Checkbutton(self, text=t)
                 self.text.window_create("end", window=cb)
