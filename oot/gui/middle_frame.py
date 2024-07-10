@@ -13,7 +13,7 @@ class CanvasWorker:
         self.image = Image.open(img_file)
         self.photoimage = None
     
-    def drawImage(self):
+    def draw_image(self):
         self.photoimage = ImageTk.PhotoImage(file=self.img_file)
         
         canvas_w = self.canvas.winfo_width()
@@ -27,25 +27,25 @@ class CanvasWorker:
             self.canvas.create_image(0,0, image=self.photoimage, anchor="nw")
         else:
             w1, h1 = self.image.size
-            w, h = CanvasWorker.getAdaptedImageSize(w1, h1, canvas_w, canvas_h)
+            w, h = CanvasWorker.get_adapted_image_size(w1, h1, canvas_w, canvas_h)
             image_resized = self.image.resize((w, h), Image.ANTIALIAS)
             self.photoimage = ImageTk.PhotoImage(image_resized)
             self.canvas.create_image(0,0, image=self.photoimage, anchor="nw")
             self.scale_ratio = w/w1
             
-    def changeImageFile(self, img_file):
+    def change_image_file(self, img_file):
         self.img_file = img_file
         self.image = Image.open(img_file)
 
-    def setImage(self, image):
+    def set_image(self, image):
         if image is not None:
             self.image = image
     
-    def getImage(self):
+    def get_image(self):
         return self.image
     
     @classmethod
-    def getAdaptedImageSize(cls, img_w, img_h, canvas_w, canvas_h):
+    def get_adapted_image_size(cls, img_w, img_h, canvas_w, canvas_h):
         w_ratio = img_h/img_w
         h_ratio = img_w/img_h
         if canvas_w*w_ratio <= canvas_h:
@@ -77,7 +77,7 @@ class MiddleFrame:
         # - https://github.com/flatplanet/Intro-To-TKinter-Youtube-Course/blob/master/image_bg_resize.py
         # - https://github.com/flatplanet/Intro-To-TKinter-Youtube-Course/
         def resizer(e):
-            MiddleFrame.redrawCanvasImages()
+            MiddleFrame.redraw_canvas_images()
  
         left_canvas.bind('<Configure>', resizer)
         # Added by Q&A from stackoverflow
@@ -90,27 +90,27 @@ class MiddleFrame:
 
 
     @classmethod
-    def redrawCanvasImages(cls):
+    def redraw_canvas_images(cls):
         print ('[MiddleFrame.resizeCanvasImages] called...')
-        cls.src_canvas_worker.drawImage()
-        cls.out_canvas_worker.drawImage()
+        cls.src_canvas_worker.draw_image()
+        cls.out_canvas_worker.draw_image()
 
     @classmethod
-    def getAdaptedImageSize(cls, img_w, img_h, canvas_w, canvas_h):
+    def get_adapted_image_size(cls, img_w, img_h, canvas_w, canvas_h):
         pass
 
     @classmethod
-    def resetCanvasImages(cls, work_file):
+    def reset_canvas_images(cls, work_file):
         print ('[MiddleFrame] resetCanvasImages() called...')
         src_file = work_file
         out_file = DataManager.get_output_file()
 
-        cls.src_canvas_worker.changeImageFile(src_file)
-        cls.out_canvas_worker.changeImageFile(out_file)
+        cls.src_canvas_worker.change_image_file(src_file)
+        cls.out_canvas_worker.change_image_file(out_file)
 
-        cls.src_canvas_worker.drawImage()
-        cls.out_canvas_worker.drawImage()
+        cls.src_canvas_worker.draw_image()
+        cls.out_canvas_worker.draw_image()
 
     @classmethod
-    def removeSelectedTexts(cls):
+    def remove_selected_texts(cls):
         pass
