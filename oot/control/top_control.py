@@ -30,10 +30,10 @@ def clicked_change_folder():
             DataManager.reset_work_folder(dir_path)
             
             # UI 업데이트
-            TopFrame.change_work_file(DataManager.folder_data.get_work_file().name)
+            TopFrame.change_work_file(DataManager.folder_data.get_work_file())
 
             # middle 이미지 업데이트
-            MiddleFrame.reset_canvas_images(DataManager.folder_data.get_work_file().name)
+            MiddleFrame.reset_canvas_images(DataManager.folder_data.get_work_file())
 
 def clicked_prev_image():
     print('[TopFrameControl] clickedPrevImage() called!!...')
