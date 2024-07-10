@@ -34,7 +34,8 @@ class FileData:
         self.name = file
         self.texts = []
         self.is_ocr_detected = False
-
+        
+        
     def set_texts(self, texts):
         self.texts = []
         for index, t in enumerate(texts):
@@ -46,14 +47,18 @@ class FileData:
     def get_text(self, index):
         return self.texts[index]
 
+
 class TextData:
     def __init__(self, text):
         self.text = text
         self.tr_text = None
-
-    def set_tr_text(self, tr_text):
+        self.position_info=[]
+        
+    def set_tr_text_with_position(self, tr_text, position):
         self.tr_text = tr_text
-
+        self.position_info.append(position)
+        
+    
 class DataManager:
     folder_data = None
     def init():
@@ -97,6 +102,7 @@ class DataManager:
             if not os.path.isfile(out_file):
                 shutil.copy(src_file, out_file)
                 
+    
     @classmethod
     def get_output_file(cls):
         print ('[DataManager] get_output_file() called...')
