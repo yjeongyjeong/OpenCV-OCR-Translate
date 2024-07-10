@@ -6,6 +6,7 @@ from tkinter import messagebox as mb
 import sys
 sys.path.append('.')
 from oot.data.data_manager import DataManager
+from oot.control.control_manager import ControlManager
 from oot.gui.top_frame import TopFrame
 from oot.gui.middle_frame import MiddleFrame
 
@@ -46,7 +47,8 @@ def clicked_prev_image():
     if prev_img is None:
         mb.showerror("에러", "이전 이미지 파일이 없습니다")
         return
-    print('[TopFrameControl] clickedPrevImage() : prev image = ', prev_img.name)   
+    print('[TopFrameControl] clickedPrevImage() : prev image = ', prev_img.name)
+    ControlManager.changed_work_image(prev_img)   
     
 def clicked_next_image():
     print('[TopFrameControl] clickedNextImage() called!!...')
@@ -58,6 +60,7 @@ def clicked_next_image():
     print('현재 작업중인 이미지: ', work_file.name)
     next_img = DataManager.get_next_imagefile(work_file)
     if next_img is None:
-        mb.showerror("에러", "이전 이미지 파일이 없습니다")
+        mb.showerror("에러", "다음 이미지 파일이 없습니다")
         return
-    print('[TopFrameControl] clickedNextImage() : next image = ', next_img.name)   
+    print('[TopFrameControl] clickedNextImage() : next image = ', next_img.name)
+    ControlManager.changed_work_image(next_img)   

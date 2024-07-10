@@ -102,7 +102,7 @@ class MiddleFrame:
     @classmethod
     def reset_canvas_images(cls, work_file):
         print ('[MiddleFrame] resetCanvasImages() called...')
-        src_file = work_file
+        src_file = work_file.name
         out_file = DataManager.get_output_file()
 
         cls.src_canvas_worker.change_image_file(src_file)
@@ -110,7 +110,9 @@ class MiddleFrame:
 
         cls.src_canvas_worker.draw_image()
         cls.out_canvas_worker.draw_image()
+    
 
     @classmethod
     def remove_selected_texts(cls):
         pass
+    
