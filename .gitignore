@@ -163,5 +163,4 @@ cython_debug/
 
 
 
-__OUTPUT_FILES__/*.jpg
-image/__OUTPUT_FILES__/*.jpg
+__OUTPUT_FILES__/
