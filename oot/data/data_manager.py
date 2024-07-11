@@ -1,7 +1,9 @@
 import glob
 import os
-from typing import cast
 import shutil
+from typing import cast
+from typing import cast
+from PIL import ImageTk, Image
 
 # FolderData > FileData > TextData
 
@@ -113,6 +115,28 @@ class DataManager:
         
         return out_file
     
+    @classmethod
+    def save_output_file(cls, src_file, out_image):
+        print ('[DataManager] save_output_file() called...')
+
+        # out_image는 PIL의 Image 객체
+        if out_image is None:
+            print ('[DataManager] save_output_file() : image is None, it can not be saved!')
+
+        # out_file은 path
+        out_file = cls.get_output_file()
+        print ('[DataManager] save_output_file() : src_file=', src_file)
+        print ('[DataManager] save_output_file() : out_file=', out_file)
+
+        if out_file is not None:
+            if out_file.lower().endswith(("png")) == False:
+                out_image.convert("RGB").save(out_file)
+            else:
+                out_image.save(out_file)
+            print('[DataManager] save_output_file(): Image saved successfully!')
+            return True
+        return False
+
     @classmethod
     def get_prev_imagefile(cls, img_file):
         print('[DataManager] getPrevImageFile() called!!...')
