@@ -16,10 +16,10 @@ class WriteFrame:
 
     # low frame write tab - [LEFT] texts tool
     def __init_write_tab_texts_tool(self, low_frm_write_tab):
-        from oot.gui.low_frame import scrollable_list
-        from oot.gui.low_frame import scrollable_list_type
+        from oot.gui.low_frame import ScrollableList
+        from oot.gui.low_frame import ScrollableListType
 
-        write_tab_text_list = scrollable_list(low_frm_write_tab, scrollable_list_type.RADIO_BUTTON)
+        write_tab_text_list = ScrollableList(low_frm_write_tab, ScrollableListType.RADIO_BUTTON)
         write_tab_text_list.text.config(width=20)
         write_tab_text_list.pack(padx=2, pady=2, side="left", fill="y")
         write_tab_text_list.reset()
