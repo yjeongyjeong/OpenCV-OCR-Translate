@@ -104,7 +104,7 @@ class LowFrame:
 
     # low frame write tab - [LEFT] texts tool
     def __init_write_tab_texts_tool(self, low_frm_write_tab):
-        write_tab_text_list = scrollable_list(low_frm_write_tab, scrollable_list_type.RADIO_BUTTON)
+        write_tab_text_list = ScrollableList(low_frm_write_tab, ScrollableListType.RADIO_BUTTON)
         write_tab_text_list.text.config(width=20)
         write_tab_text_list.pack(padx=2, pady=2, side="left", fill="y")
         write_tab_text_list.reset()
@@ -188,11 +188,11 @@ class LowFrame:
         LowFrame.write_tab_text_final = write_tab_text_final
 
 
-class scrollable_list_type(Enum):
+class ScrollableListType(Enum):
     CHECK_BUTTON = auto()
     RADIO_BUTTON = auto()
 
-class scrollable_list(tk.Frame):
+class ScrollableList(tk.Frame):
     # note : the following 2 variables should be reset when image changes
     #        - list_values
     #        - text
@@ -227,12 +227,12 @@ class scrollable_list(tk.Frame):
                 self.list_values[i] = tk.BooleanVar()
             
             for t in text_list:
-                if self.list_type == scrollable_list_type.CHECK_BUTTON:
+                if self.list_type == ScrollableListType.CHECK_BUTTON:
                     # Reference : checkbutton example getting value in callback
                     # - https://arstechnica.com/civis/viewtopic.php?t=69728
                     from oot.control.low_write_control import selectedCheckListInRemoveTab
                     cb = tk.Checkbutton(self, text=t, command=lambda i=self.__get_indexed_text(idx,t): selectedCheckListInRemoveTab(i), var=self.list_values[idx])
-                elif self.list_type == scrollable_list_type.RADIO_BUTTON:
+                elif self.list_type == ScrollableListType.RADIO_BUTTON:
                     from oot.control.low_write_control import selectedRadioListInRemoveTab
                     cb = tk.Radiobutton(self, text=t, command=lambda i=self.__get_indexed_text(idx,t): selectedRadioListInRemoveTab(i), variable=self.radio_value, value=idx)
                 else:
