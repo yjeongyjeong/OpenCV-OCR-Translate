@@ -12,6 +12,7 @@ from httpcore import SyncHTTPProxy
 from PIL import ImageTk, Image
 from tkinter import END, scrolledtext
 
+from oot.gui.subframes.remove_frame import RemoveFrame
 from oot.gui.subframes.write_frame import WriteFrame
 
 
@@ -50,6 +51,9 @@ class LowFrame:
         low_frm.add(write_tab, text='쓰기')
         low_frm.add(edit_tab, text='이미지편집')
         low_frm.add(mosaic_tab, text='모자이크')
+        
+        # init remove tab
+        remove_tab_content = RemoveFrame(remove_tab)
         
         # init write tab
         #self.__init_write_tab(write_tab)
