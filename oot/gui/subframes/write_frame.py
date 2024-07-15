@@ -1,7 +1,17 @@
 import tkinter as tk
 from tkinter import ttk, font
 from tkinter import END
+from tkinter import colorchooser
 
+
+
+def choose_color():
+    # variable to store hexadecimal code of color
+    color_code = colorchooser.askcolor(title ="Choose color") 
+    
+    from oot.gui.low_frame import LowFrame
+    LowFrame.reset_color_of_button_in_write_tab(color=color_code[1])
+    
 class WriteFrame:
 
     def __init__(self, low_frm_write_tab):
@@ -16,9 +26,8 @@ class WriteFrame:
 
     # low frame write tab - [LEFT] texts tool
     def __init_write_tab_texts_tool(self, low_frm_write_tab):
-        from oot.gui.low_frame import ScrollableList
-        from oot.gui.low_frame import ScrollableListType
-
+        
+        from oot.gui.subframes.common import ScrollableList, ScrollableListType
         write_tab_text_list = ScrollableList(low_frm_write_tab, ScrollableListType.RADIO_BUTTON)
         write_tab_text_list.text.config(width=20)
         write_tab_text_list.pack(padx=2, pady=2, side="left", fill="y")
@@ -53,7 +62,7 @@ class WriteFrame:
         write_tab_right_label_font_color = ttk.Label(b, text='폰트 색상 :')
         write_tab_right_label_font_color.grid(column=0, row=4, columnspan=2, sticky=tk.W)
         
-        from oot.gui.low_frame import choose_color
+        
         button_color = tk.Button(b, text='...', bg='yellow', command=choose_color)
         button_color.grid(column=0, row=5, columnspan=1, sticky=tk.W + tk.E)
         WriteFrame.button_color = button_color
@@ -99,6 +108,17 @@ class WriteFrame:
         write_tab_text_final.grid(column=0, row=5, sticky=tk.W+tk.E+tk.N+tk.S)
 
         from oot.gui.low_frame import LowFrame
-        LowFrame.write_tab_text_org = write_tab_text_org
-        LowFrame.write_tab_text_google = write_tab_text_google
-        LowFrame.write_tab_text_final = write_tab_text_final
+        WriteFrame.write_tab_text_org = write_tab_text_org
+        WriteFrame.write_tab_text_google = write_tab_text_google
+        WriteFrame.write_tab_text_final = write_tab_text_final
+    
+    def write_tab_changed(self):
+            from oot.gui.low_frame import LowFrame
+
+            radiobuttons = WriteFrame.write_tab_text_list
+            if radiobuttons is not None and radiobuttons.radio_value is not None:
+                selected_idx = radiobuttons.radio_value.get()
+                target_string = WriteFrame.write_tab_text_org.get("1.0",'end-1c')
+                if selected_idx == 0 and target_string is None or len(target_string) == 0:
+                    # write text to original text area of write tab in low frame
+                    LowFrame.reset_translation_target_text_in_write_tab(radiobuttons.text_list[selected_idx])
