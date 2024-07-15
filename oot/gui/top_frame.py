@@ -1,9 +1,6 @@
 import os
 import tkinter as tk
 from tkinter import ttk
-import sys
-sys.path.append('.')
-from oot.data.data_manager import DataManager
 
 
 
@@ -30,6 +27,8 @@ class TopFrame:
         btn_save_image = ttk.Button(top_frm, text='결과 저장', command=clicked_save_output)        
 
         label_curr_file_title = ttk.Label(top_frm, text='작업 파일:')
+        
+        from oot.data.data_manager import DataManager
         TopFrame.label_curr_file_name = ttk.Label(top_frm, text=DataManager.folder_data.work_file.name)
 
         btn_prev_image.pack(side='left')
