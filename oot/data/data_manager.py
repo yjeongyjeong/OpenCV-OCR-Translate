@@ -78,6 +78,7 @@ class DataManager:
     def get_work_file(cls):
         return DataManager.folder_data.get_work_file() 
     
+    @classmethod
     def set_work_file(cls, target_file):
         DataManager.folder_data.work_file = target_file
         
@@ -181,8 +182,7 @@ class DataManager:
     def changed_work_image(cls, work_file):
         
         print('[ControlManager.changedWorkImage] work_img=', work_file.name)
-        cls.set_work_file(work_file) # 현재 작업 파일을 업데이트
-        #DataManager.reset_work_folder(work_file)
+        DataManager.set_work_file(work_file) # 현재 작업 파일을 업데이트
 
         # Change images in canvases of 'MiddleFrame' with the 1st image of new dir
         MiddleFrame.reset_canvas_images(work_file)
