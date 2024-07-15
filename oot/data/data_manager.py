@@ -1,9 +1,11 @@
 import glob
 import os
 import shutil
-from typing import cast
-from typing import cast
 from PIL import ImageTk, Image
+import sys
+sys.path.append('.')
+from oot.gui.middle_frame import MiddleFrame
+from oot.gui.top_frame import TopFrame
 
 # FolderData > FileData > TextData
 
@@ -73,6 +75,13 @@ class DataManager:
         DataManager.reset_work_folder()
         
     @classmethod
+    def get_work_file(cls):
+        return DataManager.folder_data.get_work_file() 
+    
+    def set_work_file(cls, target_file):
+        DataManager.folder_data.work_file = target_file
+        
+    @classmethod
     def reset_work_folder(cls, target_folder='./image'):
         print ('[DataManager.reset] reset, target=', target_folder)
         target_path = os.path.abspath(target_folder)
@@ -116,7 +125,7 @@ class DataManager:
         return out_file
     
     @classmethod
-    def save_output_file(cls, src_file, out_image):
+    def save_output_file(cls, src_file, out_image):  #src_file 인자필요없음(로그확인용) - 추후에 삭제예정
         print ('[DataManager] save_output_file() called...')
 
         # out_image는 PIL의 Image 객체
@@ -138,7 +147,8 @@ class DataManager:
         return False
 
     @classmethod
-    def get_prev_imagefile(cls, img_file):
+    def get_prev_imagefile(cls):
+        img_file=DataManager.get_work_file()
         print('[DataManager] getPrevImageFile() called!!...')
         for i in range(len(cls.folder_data.files)):
             print('[DataManager] getPrevImageFile() i=', i, cls.folder_data.files[i].name)
@@ -165,3 +175,17 @@ class DataManager:
                     break
         print ('[DataManager] getNextImageFile() - image not found!!')
         return None
+
+
+    @classmethod
+    def changed_work_image(cls, work_file):
+        
+        print('[ControlManager.changedWorkImage] work_img=', work_file.name)
+        cls.set_work_file(work_file) # 현재 작업 파일을 업데이트
+        #DataManager.reset_work_folder(work_file)
+
+        # Change images in canvases of 'MiddleFrame' with the 1st image of new dir
+        MiddleFrame.reset_canvas_images(work_file)
+        
+        # Set new dir to 'TopFrame' at the label displaying work dir
+        TopFrame.change_work_file(work_file)
