@@ -1,6 +1,7 @@
 from tkinter import ttk
 
 
+
 #------------------------------------------------------------------------------
 # Low frame - remove tab : low frame remove tab controls
 #------------------------------------------------------------------------------
@@ -24,7 +25,7 @@ class RemoveFrame:
         remove_tab_down_frm = ttk.Frame(root)
         remove_tab_down_frm.pack(padx=2, pady=2, fill='both', expand=True)
 
-        from oot.gui.low_frame import ScrollableList, ScrollableListType
+        from oot.gui.subframes.common import ScrollableList, ScrollableListType
         remove_tab_text_list = ScrollableList(remove_tab_down_frm, ScrollableListType.CHECK_BUTTON)
 
         remove_tab_text_list.pack(side="top", fill="x", expand=True)
