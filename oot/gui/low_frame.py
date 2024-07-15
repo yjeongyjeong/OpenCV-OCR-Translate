@@ -89,7 +89,7 @@ class LowFrame:
         
         if tab_idx == 1:
             # write text to original text area of write tab in low frame
-            radiobuttons = LowFrame.write_tab_text_list
+            radiobuttons = WriteFrame.write_tab_text_list
             if radiobuttons is not None and radiobuttons.radio_value is not None:
                 selected_idx = radiobuttons.radio_value.get()
                 target_string = LowFrame.write_tab_text_org.get("1.0",'end-1c')
