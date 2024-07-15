@@ -36,6 +36,7 @@ class WriteFrame:
         WriteFrame.write_tab_text_list = write_tab_text_list
 
     # low frame write tab - [RIGHT] style tool and buttons
+    # font
     def __init_write_tab_style_tool(self, low_frm_write_tab):
         a = ttk.Frame(low_frm_write_tab)
         a.pack(side='right', fill='both')
@@ -56,9 +57,11 @@ class WriteFrame:
         write_tab_right_label_font_size = ttk.Label(b, text='폰트 사이즈 :')
         write_tab_right_label_font_size.grid(column=0, row=2, columnspan=2, sticky=tk.W)
 
-        combo_box2 = ttk.Combobox(b)
+        # Spinbox 추가
+        combo_box2 = ttk.Spinbox(b, from_=1, to=30)
+        combo_box2.set(5)  # 기본값 설정
         combo_box2.grid(column=0, row=3, columnspan=2, sticky=tk.W + tk.E)
-
+        
         write_tab_right_label_font_color = ttk.Label(b, text='폰트 색상 :')
         write_tab_right_label_font_color.grid(column=0, row=4, columnspan=2, sticky=tk.W)
         
@@ -81,10 +84,7 @@ class WriteFrame:
             default_font_index = 0
         combo_box.current(default_font_index)
 
-        # init font size list
-        font_size_list = tuple(range(5, 30))
-        combo_box2['values'] = font_size_list
-        combo_box2.current(5)
+
 
     # low frame write tab - [CENTER] translation tool
     def __init_write_tab_translation_tool(self, low_frm_write_tab):
