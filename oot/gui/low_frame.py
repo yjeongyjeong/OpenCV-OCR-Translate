@@ -14,6 +14,7 @@ from tkinter import END, scrolledtext
 
 from oot.gui.subframes.remove_frame import RemoveFrame
 from oot.gui.subframes.write_frame import WriteFrame
+from oot.gui.subframes.mosaic_frame import MosaicFrame
 
 
 def choose_color():
@@ -58,6 +59,9 @@ class LowFrame:
         # init write tab
         #self.__init_write_tab(write_tab)
         WriteFrame(write_tab)
+        
+        # init mosaic tab
+        MosaicFrame(mosaic_tab)
 
     @classmethod
     def get_status_of_check_list_in_remove_tab(cls, idx):
