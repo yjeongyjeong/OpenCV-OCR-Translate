@@ -11,6 +11,7 @@ from tkinter import END, scrolledtext
 from oot.gui.subframes.remove_frame import RemoveFrame
 from oot.gui.subframes.write_frame import WriteFrame
 from oot.gui.subframes.mosaic_frame import MosaicFrame
+from oot.gui.subframes.edit_frame import EditFrame
 
 
 
@@ -54,6 +55,9 @@ class LowFrame:
         
         # init mosaic tab
         MosaicFrame(mosaic_tab)
+
+        # init edit tab
+        EditFrame(edit_tab)
 
     @classmethod
     def get_status_of_check_list_in_remove_tab(cls, idx):
