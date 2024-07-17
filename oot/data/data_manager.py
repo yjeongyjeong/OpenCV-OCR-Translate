@@ -148,7 +148,8 @@ class DataManager:
         return False
 
     @classmethod
-    def get_prev_imagefile(cls, img_file):
+    def get_prev_imagefile(cls):
+        img_file=DataManager.get_work_file()
         print('[DataManager] getPrevImageFile() called!!...')
         for i in range(len(cls.folder_data.files)):
             print('[DataManager] getPrevImageFile() i=', i, cls.folder_data.files[i].name)
@@ -163,7 +164,8 @@ class DataManager:
         return None
 
     @classmethod
-    def get_next_imagefile(cls, img_file):
+    def get_next_imagefile(cls):
+        img_file=DataManager.get_work_file()
         print ('[DataManager] getNextImageFile() called!!...')
         for i in range(len(cls.folder_data.files)):
             print ('[DataManager] getNextImageFile() i=', i, ', curr_file=', img_file, ', compare=', cls.folder_data.files[i].name)
