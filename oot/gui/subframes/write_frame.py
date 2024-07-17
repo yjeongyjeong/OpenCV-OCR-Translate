@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk, font
 from tkinter import END
 from tkinter import colorchooser
+from tkinter import messagebox
 
 
 
@@ -14,7 +15,8 @@ def choose_color():
     
 class WriteFrame:
 
-    def __init__(self, low_frm_write_tab):
+    def __init__(self, low_frm_write_tab, root):
+        self.root = root
         # low frame write tab - [LEFT] text list
         self.__init_write_tab_texts_tool(low_frm_write_tab)
 
@@ -57,15 +59,32 @@ class WriteFrame:
         write_tab_right_label_font_size = ttk.Label(b, text='폰트 사이즈 :')
         write_tab_right_label_font_size.grid(column=0, row=2, columnspan=2, sticky=tk.W)
 
-        # Spinbox 추가
-        combo_box2 = ttk.Spinbox(b, from_=1, to=30)
-        combo_box2.set(5)  # 기본값 설정
-        combo_box2.grid(column=0, row=3, columnspan=2, sticky=tk.W + tk.E)
+        # 기본값 설정
+        default_font_size = 5
         
+        # 입력 검증 함수
+        def validate_font_size(input_str):
+            if input_str.isdigit():
+                value = int(input_str)
+                if 1 <= value <= 60:
+                    return True
+            messagebox.showwarning("경고", "1~60까지 숫자만 입력해주세요")
+            combo_box2.set(default_font_size)  # 경고 후 기본값으로 되돌림
+
+            return False
+
+        
+        # 입력 검증을 위한 Tkinter 변수와 함수 설정
+        validate_cmd = self.root.register(validate_font_size)
+        
+        # Spinbox 추가 - 값의 범위를 1에서 60으로 설정, 입력 검증 추가
+        combo_box2 = ttk.Spinbox(b, from_=1, to=60, validate='focusout', validatecommand=(validate_cmd, '%P'))
+        combo_box2.set(default_font_size)  # 기본값 설정
+        combo_box2.grid(column=0, row=3, columnspan=2, sticky=tk.W + tk.E)
+
         write_tab_right_label_font_color = ttk.Label(b, text='폰트 색상 :')
         write_tab_right_label_font_color.grid(column=0, row=4, columnspan=2, sticky=tk.W)
-        
-        
+
         button_color = tk.Button(b, text='...', bg='yellow', command=choose_color)
         button_color.grid(column=0, row=5, columnspan=1, sticky=tk.W + tk.E)
         WriteFrame.button_color = button_color

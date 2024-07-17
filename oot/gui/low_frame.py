@@ -50,7 +50,7 @@ class LowFrame:
         remove_tab_content = RemoveFrame(remove_tab)
         
         # init write tab
-        self.write_frame = WriteFrame(write_tab)
+        self.write_frame = WriteFrame(write_tab, root)
         
         # init mosaic tab
         MosaicFrame(mosaic_tab)
