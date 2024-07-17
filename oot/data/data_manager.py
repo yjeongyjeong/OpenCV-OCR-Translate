@@ -149,7 +149,6 @@ class DataManager:
 
     @classmethod
     def get_prev_imagefile(cls, img_file):
-        img_file=DataManager.get_work_file()
         print('[DataManager] getPrevImageFile() called!!...')
         for i in range(len(cls.folder_data.files)):
             print('[DataManager] getPrevImageFile() i=', i, cls.folder_data.files[i].name)
