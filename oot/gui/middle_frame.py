@@ -70,7 +70,7 @@ class MiddleFrame:
         right_canvas.grid(row=0, column=1, sticky=tk.E+tk.W+tk.N+tk.S)
 
         from oot.data.data_manager import DataManager
-        src_file = DataManager.folder_data.work_file.name
+        src_file = DataManager.get_work_file().get_file_name()
         out_file = DataManager.get_output_file()
 
         # Reference :
@@ -103,7 +103,7 @@ class MiddleFrame:
     @classmethod
     def reset_canvas_images(cls, work_file):
         print ('[MiddleFrame] resetCanvasImages() called...')
-        src_file = work_file.name
+        src_file = work_file.get_file_name()
         from oot.data.data_manager import DataManager
         out_file = DataManager.get_output_file()
 
