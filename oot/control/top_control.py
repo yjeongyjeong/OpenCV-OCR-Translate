@@ -43,6 +43,7 @@ def clicked_prev_image():
         return
     print('현재 작업중인 이미지: ', work_file.get_file_name())
     prev_img = DataManager.get_prev_file()
+
     if prev_img is None:
         mb.showerror("에러", "이전 이미지 파일이 없습니다")
         return
@@ -58,6 +59,7 @@ def clicked_next_image():
         return
     print('현재 작업중인 이미지: ', work_file.get_file_name())
     next_img = DataManager.get_next_file()
+
     if next_img is None:
         mb.showerror("에러", "다음 이미지 파일이 없습니다")
         return
