@@ -29,7 +29,7 @@ class TopFrame:
         label_curr_file_title = ttk.Label(top_frm, text='작업 파일:')
         
         from oot.data.data_manager import DataManager
-        TopFrame.label_curr_file_name = ttk.Label(top_frm, text=DataManager.folder_data.work_file.name)
+        TopFrame.label_curr_file_name = ttk.Label(top_frm, text=DataManager.get_work_file().get_file_name())
 
         btn_prev_image.pack(side='left')
         btn_next_image.pack(side='left')
@@ -40,9 +40,9 @@ class TopFrame:
         
     @classmethod    
     def change_work_file(cls, work_file=None):
-        print("work_file_name>> :", work_file.name)
+        print("work_file_name>> :", work_file.get_file_name())
         
         if cls.label_curr_file_name:
-            cls.label_curr_file_name.config(text=work_file.name)
+            cls.label_curr_file_name.config(text=work_file.get_file_name())
 
     

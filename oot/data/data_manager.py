@@ -12,67 +12,112 @@ from oot.gui.top_frame import TopFrame
 class FolderData:
     
     def __init__(self, path):
-        self.folder = path
-        self.files = []
-        self.work_file = None
+        self.__folder = path
+        self.__files = []
+        self.__work_file = None
         self.__init_work_folder()
 
     def __init_work_folder(self):
         FILE_EXT = ['png', 'jpg', 'gif']
         target_files = []
-        [target_files.extend(glob.glob(self.folder + '/' + '*.' + e)) for e in FILE_EXT]
+        [target_files.extend(glob.glob(self.__folder + '/' + '*.' + e)) for e in FILE_EXT]
 
         for tf in target_files:
-            self.files.append(FileData(tf))
+            self.__files.append(FileData(tf))
 
-        if len(self.files) == 0:
+        if len(self.__files) == 0:
             return
 
-        self.work_file = self.files[0]
+        self.__work_file = self.__files[0]
 
     def get_work_file(self):
-        return self.work_file
+        return self.__work_file
+    
+    def set_work_file(self, target_file):
+        self.__work_file = target_file
+        
+    def get_files(self):
+        return self.__files
+    
+    def get_files_as_string(self):
+        file_strings = []
+        for f in self.__files:
+            file_strings.append(f.get_file_name())
+        return file_strings
+    
+    def get_folder_path(self):
+        return self.__folder
 
 class FileData:
     def __init__(self, file):
-        self.name = file
-        self.texts = []
-        self.is_ocr_detected = False
-        
-        
-    def set_texts(self, texts):
-        self.texts = []
-        for index, t in enumerate(texts):
-            self.texts.append(TextData(t))
+        self.__name = file
+        self.__texts = []
+        self.__is_ocr_executed = False
 
-    def set_tr_text(self, index, tr_text):
-        self.texts[index].text_ko = tr_text
+    def get_file_name(self):
+        return self.__name
+
+    def is_ocr_executed(self):
+        return self.__is_ocr_executed        
+        
+    def set_ocr_texts(self, ocr_texts):
+        """
+        param ocr_texts: 
+            ocr_texts 은 아래와 같은 형태의 data 구조로 들어온다.
+            [
+                ([[24, 48], [345, 48], [345, 109], [24, 109]], '下载手机天猫APP', 0.8471784057548907), 
+                ([[24, 130], [368, 130], [368, 204], [24, 204]], '享388元礼包', 0.9837027854197318), 
+                ([[190, 306], [290, 306], [290, 336], [190, 336]], '立即扫码', 0.9933473467826843), 
+                ([[160, 348], [334, 348], [334, 372], [160, 372]], '下载手机天猫APP领福利', 0.858102917437849)
+            ]
+        """
+        self.__texts = []
+        for t in ocr_texts:
+            self.__texts.append(TextData(t[0], t[1]))
+
+    def get_ocr_texts(self):
+        return self.__texts
     
-    def get_text(self, index):
-        return self.texts[index]
+    def get_ocr_text(self, index):
+        return self.__texts[index]
 
 
 class TextData:
-    def __init__(self, text):
-        self.text = text
-        self.tr_text = None
-        self.position_info=[]
+    def __init__(self, text, position=None):
+        self.__text = text
+        self.__tr_text = None
+        """
+        OCR return example: 
+            [
+                ([[24, 48], [345, 48], [345, 109], [24, 109]], '下载手机天猫APP', 0.8471784057548907), 
+                ([[24, 130], [368, 130], [368, 204], [24, 204]], '享388元礼包', 0.9837027854197318), 
+                ([[190, 306], [290, 306], [290, 336], [190, 336]], '立即扫码', 0.9933473467826843), 
+                ([[160, 348], [334, 348], [334, 372], [160, 372]], '下载手机天猫APP领福利', 0.858102917437849)
+            ]
+        position example: [[24, 48], [345, 48], [345, 109], [24, 109]]
+        """
+        self.__position_info = None  # Example: [[24, 48], [345, 48], [345, 109], [24, 109]]
         
     def set_tr_text_with_position(self, tr_text, position):
-        self.tr_text = tr_text
-        self.position_info.append(position)
+        self.__tr_text = tr_text
+        self.__position_info = position
+    
+    def get_text(self):
+        return self.__text
+
+    def get_position_info(self):
+        return self.__position_info
+
+    def get_tr_text(self):
+        return self.__tr_text
         
     
 class DataManager:
     folder_data = None
     def init():
-        DataManager.curr_path = os.getcwd()
-        default_image_path = DataManager.curr_path + os.sep + "image"
-        print(DataManager.curr_path)
-        print(default_image_path)
-        DataManager.folder_data = FolderData(default_image_path)
-
-        DataManager.reset_work_folder()
+        curr_path = os.getcwd()
+        default_image_path = curr_path + os.sep + "image"
+        DataManager.reset_work_folder(target_folder=default_image_path)
         
     @classmethod
     def get_work_file(cls):
@@ -80,7 +125,7 @@ class DataManager:
     
     @classmethod
     def set_work_file(cls, target_file):
-        DataManager.folder_data.work_file = target_file
+        DataManager.folder_data.set_work_file(target_file)
         
     @classmethod
     def reset_work_folder(cls, target_folder='./image'):
@@ -107,7 +152,7 @@ class DataManager:
             return
         
         # copy files to output folder if source image file doesn't exist in output folder
-        target_images = [file_data.name for file_data in cls.folder_data.files]
+        target_images = [file_data.get_file_name() for file_data in cls.folder_data.get_files()]
         for src_file in target_images:
             src_file_name = os.path.basename(src_file)
             out_file = os.path.join(target_folder, '__OUTPUT_FILES__', src_file_name)
@@ -119,8 +164,8 @@ class DataManager:
     def get_output_file(cls):
         print ('[DataManager] get_output_file() called...')
 
-        out_file_dir = cls.folder_data.folder
-        out_file_name = os.path.basename(cls.folder_data.work_file.name)
+        out_file_dir = cls.folder_data.get_folder_path()
+        out_file_name = os.path.basename(cls.folder_data.get_work_file().get_file_name())
         out_file = os.path.join(out_file_dir, '__OUTPUT_FILES__', out_file_name)
         
         return out_file
@@ -148,30 +193,31 @@ class DataManager:
         return False
 
     @classmethod
-    def get_prev_imagefile(cls):
+    def get_prev_file(cls):
         img_file=DataManager.get_work_file()
         print('[DataManager] getPrevImageFile() called!!...')
-        for i in range(len(cls.folder_data.files)):
-            print('[DataManager] getPrevImageFile() i=', i, cls.folder_data.files[i].name)
-            if cls.folder_data.files[i].name == img_file.name:
+        for i in range(len(cls.folder_data.get_files())):
+            print('[DataManager] getPrevImageFile() i=', i, cls.folder_data.get_files()[i].get_file_name())
+            if cls.folder_data.get_files()[i].get_file_name() == img_file.get_file_name():
                 if i != 0:
-                    print('[DataManager] getPrevImageFile() - image found : ', cls.folder_data.files[i-1].name)
-                    cls.folder_data.work_file = cls.folder_data.files[i-1] 
-                    return cls.folder_data.files[i-1]
+                    print('[DataManager] getPrevImageFile() - image found : ', cls.folder_data.get_files()[i-1].get_file_name())
+                    cls.set_work_file(cls.folder_data.get_files()[i-1])
+                    return cls.folder_data.get_files()[i-1]
                 else:
                     break
         print('[DataManager] getPrevImageFile() - image not found!!')
         return None
 
     @classmethod
-    def get_next_imagefile(cls, img_file):
+    def get_next_file(cls):
+        img_file=DataManager.get_work_file()
         print ('[DataManager] getNextImageFile() called!!...')
-        for i in range(len(cls.folder_data.files)):
-            print ('[DataManager] getNextImageFile() i=', i, ', curr_file=', img_file, ', compare=', cls.folder_data.files[i].name)
-            if cls.folder_data.files[i].name == img_file.name:
-                if (i+1) < len(cls.folder_data.files):
-                    print ('[DataManager] getNextImageFile() - image found : ', cls.folder_data.files[i+1].name)
-                    return cls.folder_data.files[i+1]
+        for i in range(len(cls.folder_data.get_files())):
+            print ('[DataManager] getNextImageFile() i=', i, ', curr_file=', img_file, ', compare=', cls.folder_data.get_files()[i].get_file_name())
+            if cls.folder_data.get_files()[i].get_file_name() == img_file.get_file_name():
+                if (i+1) < len(cls.folder_data.get_files()):
+                    print ('[DataManager] getNextImageFile() - image found : ', cls.folder_data.get_files()[i+1].get_file_name())
+                    return cls.folder_data.get_files()[i+1]
                 else:
                     break
         print ('[DataManager] getNextImageFile() - image not found!!')
@@ -181,7 +227,7 @@ class DataManager:
     @classmethod
     def changed_work_image(cls, work_file):
         
-        print('[ControlManager.changedWorkImage] work_img=', work_file.name)
+        print('[ControlManager.changedWorkImage] work_img=', work_file.get_file_name())
         DataManager.set_work_file(work_file) # 현재 작업 파일을 업데이트
 
         # Change images in canvases of 'MiddleFrame' with the 1st image of new dir
