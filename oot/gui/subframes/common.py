@@ -32,14 +32,19 @@ class ScrollableList(tk.Frame):
         print ('[LowFrame.ScrollableList] reset() called!!...')
         print ('[LowFrame.ScrollableList] reset() : text_list=', text_list)
         
-        self.radio_value = None
-        if text_list is not None:
-            idx = 0
+        # Initialize radio_value if necessary
+        if self.list_type == ScrollableListType.CHECK_BUTTON:
+            self.radio_value = None
+            if text_list is not None:
+                self.list_values = [tk.BooleanVar() for _ in range(len(text_list))]
+        elif self.list_type == ScrollableListType.RADIO_BUTTON:
             self.radio_value = IntVar()
-            self.list_values = [None] * len(text_list)
-            for i in range(len(text_list)):
-                self.list_values[i] = tk.BooleanVar()
-            
+            if text_list and len(text_list) > 0:
+                self.radio_value.set(0)  # Select the first radio button by default
+    
+        # Proceed if text_list is not None
+        if text_list:
+            idx = 0    
             for t in text_list:
                 if self.list_type == ScrollableListType.CHECK_BUTTON:
                     # Reference : checkbutton example getting value in callback
@@ -54,3 +59,18 @@ class ScrollableList(tk.Frame):
                 self.text.window_create("end", window=cb)
                 self.text.insert("end", "\n") # to force one checkbox per line
                 idx = idx + 1
+    
+    def add(self, text, index):
+        if self.list_type == ScrollableListType.CHECK_BUTTON:
+            # Create a new Checkbutton and add it to the list
+            cb = tk.Checkbutton(self, text=text, var=self.list_values[index])
+            if index >= len(self.list_values):
+                self.list_values.append(tk.BooleanVar())
+        elif self.list_type == ScrollableListType.RADIO_BUTTON:
+            # Create a new Radiobutton and add it to the list
+            cb = tk.Radiobutton(self, text=text, variable=self.radio_value, value=index)
+        else:
+            cb = tk.Checkbutton(self, text=text)
+        
+        self.text.window_create("end", window=cb)
+        self.text.insert("end", "\n")  # to force one checkbox per line
