@@ -147,11 +147,13 @@ class WriteFrame:
             radiobuttons = WriteFrame.write_tab_text_list
             if radiobuttons is not None and radiobuttons.radio_value is not None:
                 selected_idx = radiobuttons.radio_value.get()
-                target_string = WriteFrame.write_tab_text_org.get("1.0",'end-1c')
-                if selected_idx == 0 and target_string is None or len(target_string) == 0:
-                    # write text to original text area of write tab in low frame
-                    LowFrame.reset_translation_target_text_in_write_tab(radiobuttons.text_list[selected_idx])
-                    
+                target_string = None  # Initialize target_string
+                if radiobuttons.text_list and 0 <= selected_idx < len(radiobuttons.text_list):
+                    target_string = WriteFrame.write_tab_text_org.get("1.0", 'end-1c')
+                    if selected_idx == 0 and (target_string is None or len(target_string) == 0):
+                        # Write text to original text area of write tab in low frame
+                        LowFrame.reset_translation_target_text_in_write_tab(radiobuttons.text_list[selected_idx])
+
             
     def clicked_read_text(self):
         from oot.data.data_manager import DataManager
