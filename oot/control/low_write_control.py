@@ -18,7 +18,7 @@ def selected_radio_list_in_remove_tab(text):
     # write text to original text area of write tab in low frame
     LowFrame.reset_translation_target_text_in_write_tab(selected_item_text)
 
-    MiddleFrame.reset_canvas_images(DataManager.folder_data.get_work_file().name)
+    MiddleFrame.reset_canvas_images(DataManager.get_work_file().get_file_name())
 
 def selected_check_list_in_remove_tab(text):
     print ('[LowFrameControl] selectedCheckListInRemoveTab() called!!...')
@@ -31,4 +31,4 @@ def selected_check_list_in_remove_tab(text):
     print ('[LowFrameControl] selectedCheckListInRemoveTab() : id = ', selected_item_id)
     print ('[LowFrameControl] selectedCheckListInRemoveTab() : text = ', selected_item_text)
     print ('[LowFrameControl] selectedCheckListInRemoveTab() : status = ', selected_item_status.get())
-    MiddleFrame.reset_canvas_images(DataManager.folder_data.get_work_file().name)
+    MiddleFrame.reset_canvas_images(DataManager.get_work_file().get_file_name())
