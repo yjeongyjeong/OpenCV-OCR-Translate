@@ -1,7 +1,6 @@
 from tkinter import ttk
 
 
-
 #------------------------------------------------------------------------------
 # Low frame - remove tab : low frame remove tab controls
 #------------------------------------------------------------------------------
@@ -14,7 +13,8 @@ class RemoveFrame:
         self.frame_btn = ttk.Frame(root)
         self.frame_btn.pack(padx=2, pady=2, fill='x')
         
-        btn_search_text = ttk.Button(self.frame_btn, text='텍스트 찾기')
+        from oot.control.low_remove_control import clicked_search_text
+        btn_search_text = ttk.Button(self.frame_btn, text='텍스트 찾기', command=clicked_search_text)
         btn_remove_text = ttk.Button(self.frame_btn, text='텍스트 지우기')
         btn_revoke_image = ttk.Button(self.frame_btn, text='원상태 복원')
 

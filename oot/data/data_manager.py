@@ -1,11 +1,11 @@
 import glob
 import os
 import shutil
-from PIL import ImageTk, Image
 import sys
-sys.path.append('.')
-from oot.gui.middle_frame import MiddleFrame
-from oot.gui.top_frame import TopFrame
+import easyocr
+
+from PIL import ImageTk, Image
+from tkinter import messagebox as mb
 
 # FolderData > FileData > TextData
 
@@ -13,7 +13,7 @@ class FolderData:
     
     def __init__(self, path):
         self.__folder = path
-        self.__files = []
+        self.__files = []   # FileData 객체를 의미
         self.__work_file = None
         self.__init_work_folder()
 
@@ -37,13 +37,16 @@ class FolderData:
         self.__work_file = target_file
         
     def get_files(self):
-        return self.__files
+        return self.__files     # FileData 반환
+    
+    def get_file_by_index(self, index):
+        return self.__files[index]      # FileData 반환
     
     def get_files_as_string(self):
         file_strings = []
         for f in self.__files:
             file_strings.append(f.get_file_name())
-        return file_strings
+        return file_strings     # FileData의 name 반환
     
     def get_folder_path(self):
         return self.__folder
@@ -51,7 +54,7 @@ class FolderData:
 class FileData:
     def __init__(self, file):
         self.__name = file
-        self.__texts = []
+        self.__texts = []   # TextData 객체를 의미
         self.__is_ocr_executed = False
 
     def get_file_name(self):
@@ -60,7 +63,7 @@ class FileData:
     def is_ocr_executed(self):
         return self.__is_ocr_executed        
         
-    def set_ocr_texts(self, ocr_texts):
+    def set_texts(self, ocr_texts):
         """
         param ocr_texts: 
             ocr_texts 은 아래와 같은 형태의 data 구조로 들어온다.
@@ -73,17 +76,24 @@ class FileData:
         """
         self.__texts = []
         for t in ocr_texts:
-            self.__texts.append(TextData(t[0], t[1]))
+            self.__texts.append(TextData(t[1], t[0]))
+        self.__is_ocr_executed = True
 
-    def get_ocr_texts(self):
-        return self.__texts
+    def get_texts(self):
+        return self.__texts     # TextData 객체 반환
     
-    def get_ocr_text(self, index):
-        return self.__texts[index]
-
+    def get_text_by_index(self, index):
+        return self.__texts[index]      # TextData 객체 반환
+    
+    def get_texts_as_string(self):
+        return [t.get_text() for t in self.__texts]     # TextData의 text 반환
+    
+    def get_text_as_string_by_index(self, index):
+        ocr_text_list = [t.get_text() for t in self.__texts]
+        return ocr_text_list[index]     # # TextData의 text 반환
 
 class TextData:
-    def __init__(self, text, position=None):
+    def __init__(self, text, position):
         self.__text = text
         self.__tr_text = None
         """
@@ -96,7 +106,7 @@ class TextData:
             ]
         position example: [[24, 48], [345, 48], [345, 109], [24, 109]]
         """
-        self.__position_info = None  # Example: [[24, 48], [345, 48], [345, 109], [24, 109]]
+        self.__position_info = position  # Example: [[24, 48], [345, 48], [345, 109], [24, 109]]
         
     def set_tr_text_with_position(self, tr_text, position):
         self.__tr_text = tr_text
@@ -114,10 +124,16 @@ class TextData:
     
 class DataManager:
     folder_data = None
+    # no need to reset, reload
+    easyocr_reader = None
+
     def init():
         curr_path = os.getcwd()
         default_image_path = curr_path + os.sep + "image"
         DataManager.reset_work_folder(target_folder=default_image_path)
+
+        # this needs to run only once to load the model into memory
+        DataManager.easyocr_reader = easyocr.Reader(['ch_sim','en'])
         
     @classmethod
     def get_work_file(cls):
@@ -230,8 +246,59 @@ class DataManager:
         print('[ControlManager.changedWorkImage] work_img=', work_file.get_file_name())
         DataManager.set_work_file(work_file) # 현재 작업 파일을 업데이트
 
+        from oot.gui.middle_frame import MiddleFrame
         # Change images in canvases of 'MiddleFrame' with the 1st image of new dir
         MiddleFrame.reset_canvas_images(work_file)
         
+        from oot.gui.top_frame import TopFrame
         # Set new dir to 'TopFrame' at the label displaying work dir
         TopFrame.change_work_file(work_file)
+
+    @classmethod
+    def get_image_index(cls):
+        print ('[DataManager] get_image_index() called!!...')
+        img_file = cls.folder_data.get_work_file()
+        target_file = cls.folder_data.get_files()
+       
+        for i in range(len(target_file)):
+            if target_file[i] == img_file:
+                return i
+        return -1
+
+    @classmethod
+    def get_texts_from_image(cls):
+        """
+        OCR을 통해 이미지 내에 존재하는 텍스트를 읽고, 리스트 형태로 반환합니다.
+        FolderData의 files[i]를 통해 아래의 작업을 수행합니다.
+        FileData의 texts, ocr_executed를 update합니다.
+        TextData의 text, posiont을 update합니다.
+
+        return: 
+            list: OCR 결과로 추출된 텍스트 리스트를 리턴. 
+        """
+        print ('[DataManager] get_texts_from_image() called!!...')
+        
+        # 확장자 포함 path 값
+        img_file = cls.folder_data.get_work_file().get_file_name()
+        # 현재 작업 이미지 FileData 객체
+        file_index = cls.get_image_index()
+        work_file = cls.folder_data.get_file_by_index(file_index)
+        ocr_executed_texts_list = []
+
+        if work_file.is_ocr_executed():
+            mb.showinfo("알림", "이미 읽은 데이터입니다.")
+            ocr_executed_texts_list = work_file.get_texts_as_string()
+            return ocr_executed_texts_list
+        
+        # easyocr을 통해 읽은 text를 저장
+        ocr_texts = cls.easyocr_reader.readtext(img_file)
+        DataManager.folder_data.get_work_file().set_texts(ocr_texts)
+
+        ocr_executed_texts_list = work_file.get_texts_as_string()
+        
+        # can not read texts in image
+        if len(ocr_executed_texts_list) == 0:
+            mb.showwarning("경고", "text를 찾을 수 없습니다.")
+            return None
+
+        return ocr_executed_texts_list
