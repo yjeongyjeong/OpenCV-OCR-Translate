@@ -30,12 +30,22 @@ class WriteFrame:
     def __init_write_tab_texts_tool(self, low_frm_write_tab):
         
         from oot.gui.subframes.common import ScrollableList, ScrollableListType
-        write_tab_text_list = ScrollableList(low_frm_write_tab, ScrollableListType.RADIO_BUTTON)
+        # Create a frame to hold both the button and the text list
+        left_frame = ttk.Frame(low_frm_write_tab)
+        left_frame.pack(side="left", fill="y")
+        
+        # Adding the 'Read Text' button
+        read_text_button = ttk.Button(left_frame, text='텍스트 읽어오기', command=self.clicked_read_text)
+        read_text_button.pack(padx=2, pady=2, anchor='nw')
+    
+        # Packing the text list below the button
+        write_tab_text_list = ScrollableList(left_frame, ScrollableListType.RADIO_BUTTON)
         write_tab_text_list.text.config(width=20)
-        write_tab_text_list.pack(padx=2, pady=2, side="left", fill="y")
+        write_tab_text_list.pack(padx=2, pady=2, fill="both", expand=True)
         write_tab_text_list.reset()
 
         WriteFrame.write_tab_text_list = write_tab_text_list
+        
 
     # low frame write tab - [RIGHT] style tool and buttons
     # font
@@ -141,3 +151,31 @@ class WriteFrame:
                 if selected_idx == 0 and target_string is None or len(target_string) == 0:
                     # write text to original text area of write tab in low frame
                     LowFrame.reset_translation_target_text_in_write_tab(radiobuttons.text_list[selected_idx])
+                    
+            
+    def clicked_read_text(self):
+        from oot.data.data_manager import DataManager
+
+        texts = DataManager.get_texts_from_image()
+        if texts is None:
+            return
+
+        # Clear existing radio buttons
+        write_tab_text_list = WriteFrame.write_tab_text_list
+        write_tab_text_list.reset()
+
+        # Add OCR texts as radio buttons
+        for i, text in enumerate(texts):
+            write_tab_text_list.add(text, i)
+            
+    @classmethod
+    def reset_write_tab_data(cls, texts=None):
+        print ('[LowFrame.resetWriteTabData] called...')
+
+        # clear test list found in the image
+        cls.write_tab_text_list.reset(texts)
+
+        # clear 'translation tool' area
+        cls.write_tab_text_org.delete('1.0', END)
+        cls.write_tab_text_google.delete('1.0', END)
+        cls.write_tab_text_final.delete('1.0', END)

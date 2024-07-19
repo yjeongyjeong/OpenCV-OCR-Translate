@@ -246,6 +246,10 @@ class DataManager:
         print('[ControlManager.changedWorkImage] work_img=', work_file.get_file_name())
         DataManager.set_work_file(work_file) # 현재 작업 파일을 업데이트
 
+        # clear all data in 'write tab' of 'WriteFrame'
+        from oot.gui.subframes.write_frame import WriteFrame
+        WriteFrame.reset_write_tab_data()
+        
         from oot.gui.middle_frame import MiddleFrame
         # Change images in canvases of 'MiddleFrame' with the 1st image of new dir
         MiddleFrame.reset_canvas_images(work_file)
