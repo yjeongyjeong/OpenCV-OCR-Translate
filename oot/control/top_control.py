@@ -4,10 +4,12 @@ from tkinter import filedialog
 from tkinter import messagebox as mb
 
 import sys
+
 sys.path.append('.')
 from oot.data.data_manager import DataManager
 from oot.gui.top_frame import TopFrame
 from oot.gui.middle_frame import MiddleFrame
+from oot.gui.subframes.write_frame import WriteFrame
 
 def __check_work_folder(work_dir):
     # check if image exists
@@ -27,6 +29,9 @@ def clicked_change_folder():
     if __check_work_folder(dir_path):
             # 폴더 변경
             DataManager.reset_work_folder(dir_path)
+            
+            # 이전 문자 인식결과 초기화
+            WriteFrame.reset_write_tab_data()
             
             # UI 업데이트
             TopFrame.change_work_file(DataManager.get_work_file())
