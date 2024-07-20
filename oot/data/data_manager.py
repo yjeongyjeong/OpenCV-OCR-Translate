@@ -271,7 +271,7 @@ class DataManager:
         ocr_executed_texts_list = []
 
         if work_file.is_ocr_executed():
-            mb.showinfo("알림", "이미 읽은 데이터입니다.")
+            print('[DataManager] get_texts_from_image() called!!... 이미 읽은 데이터입니다.')
             ocr_executed_texts_list = work_file.get_texts_as_string()
             return ocr_executed_texts_list
         

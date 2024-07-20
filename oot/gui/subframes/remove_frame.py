@@ -1,5 +1,8 @@
 from tkinter import ttk
 
+from oot.gui.subframes.common import ScrollableList, ScrollableListType
+from oot.control.low_remove_control import RemoveTextListHandler
+
 
 #------------------------------------------------------------------------------
 # Low frame - remove tab : low frame remove tab controls
@@ -23,15 +26,25 @@ class RemoveFrame:
         btn_revoke_image.pack(side='left')
 
         remove_tab_down_frm = ttk.Frame(root)
+        RemoveFrame.__set_remove_tab_text_list(remove_tab_down_frm)
+
+    @classmethod
+    def __set_remove_tab_text_list(cls, remove_tab_down_frm):
         remove_tab_down_frm.pack(padx=2, pady=2, fill='both', expand=True)
-
-        from oot.gui.subframes.common import ScrollableList, ScrollableListType
-        remove_tab_text_list = ScrollableList(remove_tab_down_frm, ScrollableListType.CHECK_BUTTON)
-
-        remove_tab_text_list.pack(side="top", fill="x", expand=True)
-        remove_tab_text_list.reset()
-        self.remove_tab_text_list = remove_tab_text_list
-
+        cls.remove_tab_text_list = ScrollableList(remove_tab_down_frm, ScrollableListType.CHECK_BUTTON, RemoveTextListHandler())
+        cls.remove_tab_text_list.pack(side="top", fill="x", expand=True)
+    
     @classmethod
     def get_frame(cls):
         return cls.remove_tab_text_list
+
+    @classmethod
+    def get_status_of_check_list(cls, idx):
+        print ('[RemoveFrame] get_status_of_check_list() called...')
+        return cls.remove_tab_text_list.list_values[idx]
+    
+    @classmethod
+    def reset_remove_tab_data(cls, texts=None):
+        print ('[LowFrame] resetRemoveTabData() called...')
+        print ('[LowFrame] resetRemoveTabData() : texts=', texts)
+        cls.remove_tab_text_list.reset(texts)
