@@ -7,6 +7,7 @@ import sys
 
 sys.path.append('.')
 from oot.data.data_manager import DataManager
+from oot.gui.gui_main import GuiManager
 from oot.gui.top_frame import TopFrame
 from oot.gui.middle_frame import MiddleFrame
 from oot.gui.subframes.write_frame import WriteFrame
@@ -53,7 +54,7 @@ def clicked_prev_image():
         mb.showerror("에러", "이전 이미지 파일이 없습니다")
         return
     print('[TopFrameControl] clickedPrevImage() : prev image = ', prev_img.get_file_name())
-    DataManager.changed_work_image(prev_img)   
+    GuiManager.changed_work_image(prev_img)   
     
 def clicked_next_image():
     print('[TopFrameControl] clickedNextImage() called!!...')
@@ -69,7 +70,7 @@ def clicked_next_image():
         mb.showerror("에러", "다음 이미지 파일이 없습니다")
         return
     print('[TopFrameControl] clickedNextImage() : next image = ', next_img.get_file_name())
-    DataManager.changed_work_image(next_img)   
+    GuiManager.changed_work_image(next_img)   
 
 def clicked_save_output():
     print('[TopFrameControl] clicked_save_output() called!!...')
