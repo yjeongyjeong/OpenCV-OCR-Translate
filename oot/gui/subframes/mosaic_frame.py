@@ -35,7 +35,7 @@ class MosaicFrame:
         image_select = ttk.Button(a, text='보호 이미지 선택')
         image_select.grid(column=0, row=0, columnspan=1, sticky='W')
         
-        mosaic_tab_list = ScrollableList(a, ScrollableListType.RADIO_BUTTON)
+        mosaic_tab_list = ScrollableList(a, ScrollableListType.RADIO_BUTTON, None)
         mosaic_tab_list.text.config(width=100)
         # mosaic_tab_list.grid(column=0, row=1, columnspan=2, sticky='EW')
         mosaic_tab_list.reset()

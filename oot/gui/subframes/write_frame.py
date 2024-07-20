@@ -39,7 +39,7 @@ class WriteFrame:
         read_text_button.pack(padx=2, pady=2, anchor='nw')
     
         # Packing the text list below the button
-        write_tab_text_list = ScrollableList(left_frame, ScrollableListType.RADIO_BUTTON)
+        write_tab_text_list = ScrollableList(left_frame, ScrollableListType.RADIO_BUTTON, None)
         write_tab_text_list.text.config(width=20)
         write_tab_text_list.pack(padx=2, pady=2, fill="both", expand=True)
         write_tab_text_list.reset()
