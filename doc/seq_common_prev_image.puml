@@ -1,0 +1,27 @@
+@startuml Prev Image
+    skinparam backgroundColor #EEEBDC
+    skinparam handwritten true
+    actor User
+    participant TopFrame
+    participant MiddleFrame
+    participant LowFrame
+    participant GuiManager
+    control Python.UI.Controller as Python.UI
+    participant top_control
+    database DataManager
+    User -> TopFrame : click '이전 이미지'
+    TopFrame --> Python.UI : event
+    Python.UI -> top_control : clicked_prev_image()
+    activate Python.UI
+    activate top_control
+    top_control -> DataManager : get_prev_file()
+    top_control -> DataManager : set_work_file()
+    top_control -> GuiManager : changed_work_image()
+    activate GuiManager
+    GuiManager -> TopFrame : reset_work_file()
+    GuiManager -> MiddleFrame : reset_work_file()
+    GuiManager -> LowFrame : reset_work_file()
+    deactivate GuiManager
+    deactivate top_control
+    deactivate Python.UI
+@enduml
