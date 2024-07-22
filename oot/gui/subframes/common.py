@@ -75,18 +75,3 @@ class ScrollableList(tk.Frame):
                 self.text.window_create("end", window=cb)
                 self.text.insert("end", "\n") # to force one checkbox per line
                 idx = idx + 1
-    
-    def add(self, text, index):
-        if self.list_type == ScrollableListType.CHECK_BUTTON:
-            # Create a new Checkbutton and add it to the list
-            cb = tk.Checkbutton(self, text=text, var=self.list_values[index])
-            if index >= len(self.list_values):
-                self.list_values.append(tk.BooleanVar())
-        elif self.list_type == ScrollableListType.RADIO_BUTTON:
-            # Create a new Radiobutton and add it to the list
-            cb = tk.Radiobutton(self, text=text, variable=self.radio_value, value=index)
-        else:
-            cb = tk.Checkbutton(self, text=text)
-        
-        self.text.window_create("end", window=cb)
-        self.text.insert("end", "\n")  # to force one checkbox per line
