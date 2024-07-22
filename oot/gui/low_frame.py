@@ -59,17 +59,6 @@ class LowFrame:
         # init edit tab
         EditFrame(edit_tab)
 
-    @classmethod
-    def reset_write_tab_data(cls, texts=None):
-        pass
-
-    @classmethod
-    def reset_translation_target_text_in_write_tab(cls, text=None):
-        pass
-
-    @classmethod
-    def reset_color_of_button_in_write_tab(cls, color='#FFFF00'):
-        pass
     
     def __tab_changed(self, event):
         tab_idx = LowFrame.notebook.index(LowFrame.notebook.select())

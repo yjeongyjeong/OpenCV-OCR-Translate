@@ -2,8 +2,12 @@ import tkinter as tk
 from tkinter import ttk, font
 from tkinter import END
 from tkinter import messagebox
-
+import googletrans
+from googletrans import Translator
+from httpcore import SyncHTTPProxy
     
+ENABLE_PROXY = False
+
 class WriteFrame:
 
     def __init__(self, low_frm_write_tab, root):
@@ -135,17 +139,23 @@ class WriteFrame:
         WriteFrame.write_tab_text_final = write_tab_text_final
     
     def write_tab_changed(self):
-            from oot.gui.low_frame import LowFrame
-
+            print("[write_tab_changed] called()>>")
             radiobuttons = WriteFrame.write_tab_text_list
+            
+            # 라디오 버튼 목록이 있고, 라디오 값이 None이 아닌 경우
             if radiobuttons is not None and radiobuttons.radio_value is not None:
                 selected_idx = radiobuttons.radio_value.get()
                 target_string = None  # Initialize target_string
+                
+                # 라디오 버튼 목록의 텍스트 리스트가 있고, 선택된 인덱스가 유효한 경우
                 if radiobuttons.text_list and 0 <= selected_idx < len(radiobuttons.text_list):
                     target_string = WriteFrame.write_tab_text_org.get("1.0", 'end-1c')
+
+                    # 선택된 인덱스가 0이고, target_string이 비어 있는 경우
                     if selected_idx == 0 and (target_string is None or len(target_string) == 0):
-                        # Write text to original text area of write tab in low frame
-                        LowFrame.reset_translation_target_text_in_write_tab(radiobuttons.text_list[selected_idx])
+                        # 원본 텍스트 영역에 선택된 텍스트를 설정
+                        print("[write_tab_changed] 선택된 텍스트>>>",radiobuttons.text_list)
+                        WriteFrame.reset_translation_target_text_in_write_tab(radiobuttons.text_list[selected_idx])
 
             
     @classmethod
@@ -160,3 +170,28 @@ class WriteFrame:
         cls.write_tab_text_google.delete('1.0', END)
         cls.write_tab_text_final.delete('1.0', END)
         
+    @classmethod
+    def reset_translation_target_text_in_write_tab(cls, text=None):
+        # clear 'translation tool' area
+        cls.write_tab_text_org.delete('1.0', END)
+        cls.write_tab_text_google.delete('1.0', END)
+        cls.write_tab_text_final.delete('1.0', END)
+
+        # set text to original text area
+        cls.write_tab_text_org.insert("end", text)
+        
+        # translate it
+        if ENABLE_PROXY:
+            proxies_def = {'https': SyncHTTPProxy((b'http', b'www-proxy.us.oracle.com', 80, b''))}
+            translator = googletrans.Translator(proxies=proxies_def)
+        else:
+            translator = Translator()
+        result = translator.translate(text, dest='ko')
+        
+        # set result text to 
+        cls.write_tab_text_google.insert("end", result.text)
+        
+        # TODO: clear 'style tool' area
+        
+    def reset_color_of_button_in_write_tab(color='#FFFF00'):
+        WriteFrame.button_color.configure(bg=color)

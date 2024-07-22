@@ -3,7 +3,6 @@ import sys
 sys.path.append('.')
 from oot.gui.subframes.common import ScrollableListListener
 from oot.gui.subframes.write_frame import WriteFrame
-from oot.gui.low_frame import LowFrame
 
 
 
@@ -22,8 +21,8 @@ class WriteTextListHandler(ScrollableListListener):
         print ('[WriteTextListHandler] selected_radio_list() : id = ', selected_item_id)
         print ('[WriteTextListHandler] selected_radio_list() : text = ', selected_item_text)
         
-        # # write text to original text area of write tab in low frame
-        # LowFrame.reset_translation_target_text_in_write_tab(selected_item_text)
+        # write text to original text area of write tab in low frame
+        WriteFrame.reset_translation_target_text_in_write_tab(selected_item_text)
 
         # MiddleFrame.reset_canvas_images(DataManager.get_work_file().get_file_name())
 
@@ -31,7 +30,7 @@ def choose_color():
     # variable to store hexadecimal code of color
     color_code = colorchooser.askcolor(title ="Choose color") 
     
-    LowFrame.reset_color_of_button_in_write_tab(color=color_code[1])
+    WriteFrame.reset_color_of_button_in_write_tab(color=color_code[1])
 
     
 def clicked_read_text():
