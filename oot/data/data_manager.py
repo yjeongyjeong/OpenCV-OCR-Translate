@@ -91,6 +91,22 @@ class FileData:
     def get_text_as_string_by_index(self, index):
         ocr_text_list = [t.get_text() for t in self.__texts]
         return ocr_text_list[index]     # # TextData의 text 반환
+    
+    def get_rectangle_position_by_texts_index(self, index):
+        """
+        __texts[index]의 position 좌표값을 가져오는 함수입니다.
+
+        param index (int): 
+            __texts[index]를 통해 TextData 반환할 때 사용.
+
+        returns:
+            start_pos, end_pos:
+            사각형 그리기에 필요한 왼쪽 상단 좌표(start_pos)와 오른쪽 하단 좌표(end_pos).
+        """
+        print ('[DataManager] get_rectangle_position_by_texts_index() called...')
+        rectangle_position = self.get_text_by_index(index).get_position_info()
+        start_pos, end_pos = rectangle_position[0], rectangle_position[2]
+        return start_pos, end_pos
 
 class TextData:
     def __init__(self, text, position):
