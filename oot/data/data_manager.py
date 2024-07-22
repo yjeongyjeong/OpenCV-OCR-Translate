@@ -88,6 +88,9 @@ class FileData:
     def get_texts_as_string(self):
         return [t.get_text() for t in self.__texts]     # TextData의 text 반환
     
+    def get_positions_as_string(self):
+        return [t.get_position_info() for t in self.__texts]     # TextData의 position_info 반환
+    
     def get_text_as_string_by_index(self, index):
         ocr_text_list = [t.get_text() for t in self.__texts]
         return ocr_text_list[index]     # # TextData의 text 반환
