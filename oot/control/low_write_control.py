@@ -44,3 +44,7 @@ def clicked_read_text():
         # Clear existing radio buttons
         write_tab_text_list = WriteFrame.write_tab_text_list
         write_tab_text_list.reset(texts)
+        
+        # 번역도 함께 진행되도록 첫 번째 항목을 번역 영역에 설정
+        if texts and len(texts) > 0:
+            WriteFrame.reset_translation_target_text_in_write_tab(texts[0])

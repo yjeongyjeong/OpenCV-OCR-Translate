@@ -139,7 +139,7 @@ class WriteFrame:
         WriteFrame.write_tab_text_final = write_tab_text_final
     
     def write_tab_changed(self):
-            print("[write_tab_changed] called()>>")
+            print("[write_tab_changed] called()!!...")
             radiobuttons = WriteFrame.write_tab_text_list
             
             # 라디오 버튼 목록이 있고, 라디오 값이 None이 아닌 경우
