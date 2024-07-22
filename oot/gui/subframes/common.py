@@ -39,6 +39,7 @@ class ScrollableList(tk.Frame):
         self.vsb.pack(side="right", fill="y")
         self.text.pack(side="left", fill="both", expand=True)
         self.list_values = []
+        self.text_list = None  # Initialize text_list
         
     def __get_indexed_text(self, idx, text):
         return str(idx) + '|' + text
