@@ -32,6 +32,46 @@ class CanvasWorker:
             self.photoimage = ImageTk.PhotoImage(image_resized)
             self.canvas.create_image(0,0, image=self.photoimage, anchor="nw")
             self.scale_ratio = w/w1
+
+        from  oot.data.data_manager import DataManager
+        from  oot.gui.subframes.remove_frame import RemoveFrame
+        tab_idx = LowFrame.notebook.index(LowFrame.notebook.select())
+        if tab_idx == 0:
+            # draw lines for selected text in check list of remove tab in LowFrame
+            idx = 0
+            list_values = RemoveFrame.remove_tab_text_list.list_values
+            if list_values == None or len(list_values) == 0:
+                return
+            for item in RemoveFrame.remove_tab_text_list.list_values:
+                if item.get() == True:
+                    image_index = DataManager.get_image_index()
+                    work_file = DataManager.folder_data.get_file_by_index(image_index) # FileData
+                    start_pos, end_pos = work_file.get_rectangle_position_by_texts_index(idx)
+                    self.canvas.create_rectangle(
+                        int(self.scale_ratio*start_pos[0]),  # start x 
+                        int(self.scale_ratio*start_pos[1]),  # start y
+                        int(self.scale_ratio*end_pos[0]),    # end x
+                        int(self.scale_ratio*end_pos[1]),    # end y
+                        #outline='green'
+                        outline='#00ff00'
+                    )
+                idx = idx + 1
+        from  oot.gui.subframes.write_frame import WriteFrame
+        if tab_idx == 1:
+            # draw lines for selected text in check list of write tab in LowFrame
+            if WriteFrame.write_tab_text_list is not None and WriteFrame.write_tab_text_list.radio_value is not None:
+                idx = WriteFrame.write_tab_text_list.radio_value.get()
+                image_index = DataManager.get_image_index()
+                work_file = DataManager.folder_data.get_file_by_index(image_index) # FileData
+                start_pos, end_pos = work_file.get_rectangle_position_by_texts_index(idx)
+                self.canvas.create_rectangle(
+                    int(self.scale_ratio*start_pos[0]),  # start x 
+                    int(self.scale_ratio*start_pos[1]),  # start y
+                    int(self.scale_ratio*end_pos[0]),    # end x
+                    int(self.scale_ratio*end_pos[1]),    # end y
+                    #outline='blue'
+                    outline='#0000ff'
+                )
             
     def change_image_file(self, img_file):
         self.img_file = img_file

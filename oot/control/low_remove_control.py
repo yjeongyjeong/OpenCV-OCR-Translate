@@ -20,6 +20,10 @@ class RemoveTextListHandler(ScrollableListListener):
         print ('[RemoveTextListHandler] selected_check_list() : text = ', selected_item_text)
         print ('[RemoveTextListHandler] selected_check_list() : status = ', selected_item_status.get())
 
+        from oot.gui.middle_frame import MiddleFrame
+        # 체크하는 경우(status =  True) 양쪽 이미지에 사각형 그리기
+        MiddleFrame.redraw_canvas_images()
+
 def clicked_search_text(): 
     print('[low_remove_control] clicked_search_text() called!!...')
     texts = DataManager.get_texts_from_image()
