@@ -156,5 +156,66 @@ class MiddleFrame:
 
     @classmethod
     def remove_selected_texts(cls):
-        pass
+        from oot.data.data_manager import DataManager
+        print ('[MiddleFrame] remove_selected_texts() called...')
+        image_index = DataManager.get_image_index()
+        work_file = DataManager.folder_data.get_file_by_index(image_index) # FileData
+        texts = work_file.get_texts_as_string()       # 해당 워크 파일에 해당하는 TextData의 text
+        if texts == None:
+            print ('[MiddleFrame] remove_selected_texts() : no texts were selected!')
+            return None
+        
+        # Reference : Image conversion from cv2 to PhotoImage (PIL)
+        # - https://m.blog.naver.com/heennavi1004/222028305376
+        import cv2
+        out_file = DataManager.get_output_file()
+        positions = work_file.get_positions_as_string()
+        img_cv2 = cls.__inpaint_for_selected_texts(out_file, positions)
+        if img_cv2 is None:
+            print ('[MiddleFrame] remove_selected_texts() : no need to redraw image!')
+            return
+        
+        img_conv = Image.fromarray(img_cv2)
+
+        # reset (redraw) output canvas with image which selected texts were removed in
+        cls.out_canvas_worker.set_image(img_conv)
+        cls.redraw_canvas_images()
     
+    @classmethod
+    def __inpaint_for_selected_texts(cls, img_path, texts_position):
+        import math
+        import numpy as np
+        import cv2
+        import easyocr
+        from oot.gui.subframes.remove_frame import RemoveFrame
+        # texts # Example: [[24, 48], [345, 48], [345, 109], [24, 109]]
+        print ('[MiddleFrame] __inpaint_for_selected_texts() called...')
+        
+        # generate (word, box) tuples 
+        img = cv2.cvtColor(cv2.imread(img_path), cv2.COLOR_BGR2RGB)
+        mask = np.zeros(img.shape[:2], dtype="uint8")
+
+        img_return = None
+        idx = 0
+        for t in texts_position:
+            list_status = RemoveFrame.remove_tab_text_list.list_values
+            if list_status[idx].get() == True:
+                x0, y0 = t[0]
+                x1, y1 = t[1] 
+                x2, y2 = t[2]
+                x3, y3 = t[3] 
+
+                x_mid0, y_mid0 = cls.__midpoint(x1, y1, x2, y2)
+                x_mid1, y_mi1 = cls.__midpoint(x0, y0, x3, y3)
+                thickness = int(math.sqrt( (x2 - x1)**2 + (y2 - y1)**2 ))
+                
+                cv2.line(mask, (x_mid0, y_mid0), (x_mid1, y_mi1), 255, thickness)
+                img_return = cv2.inpaint(img, mask, 7, cv2.INPAINT_NS)
+            idx = idx+1
+        return img_return
+    
+    @classmethod
+    def __midpoint(cls, x1, y1, x2, y2):
+        x_mid = int((x1 + x2)/2)
+        y_mid = int((y1 + y2)/2)
+        return (x_mid, y_mid)

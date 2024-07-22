@@ -33,3 +33,8 @@ def clicked_search_text():
         from oot.gui.subframes.remove_frame import RemoveFrame
         scrollable_frame = RemoveFrame.get_frame()
         scrollable_frame.reset(texts)
+
+def clicked_remove_text(): 
+    from oot.gui.middle_frame import MiddleFrame
+    print('[low_remove_control] clicked_search_text() called!!...')
+    MiddleFrame.remove_selected_texts()
