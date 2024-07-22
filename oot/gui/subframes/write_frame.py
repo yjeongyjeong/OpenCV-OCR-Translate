@@ -1,17 +1,8 @@
 import tkinter as tk
 from tkinter import ttk, font
 from tkinter import END
-from tkinter import colorchooser
 from tkinter import messagebox
 
-
-
-def choose_color():
-    # variable to store hexadecimal code of color
-    color_code = colorchooser.askcolor(title ="Choose color") 
-    
-    from oot.gui.low_frame import LowFrame
-    LowFrame.reset_color_of_button_in_write_tab(color=color_code[1])
     
 class WriteFrame:
 
@@ -29,17 +20,19 @@ class WriteFrame:
     # low frame write tab - [LEFT] texts tool
     def __init_write_tab_texts_tool(self, low_frm_write_tab):
         
-        from oot.gui.subframes.common import ScrollableList, ScrollableListType
         # Create a frame to hold both the button and the text list
         left_frame = ttk.Frame(low_frm_write_tab)
         left_frame.pack(side="left", fill="y")
         
         # Adding the 'Read Text' button
-        read_text_button = ttk.Button(left_frame, text='텍스트 읽어오기', command=self.clicked_read_text)
+        from oot.control.low_write_control import clicked_read_text
+        read_text_button = ttk.Button(left_frame, text='텍스트 읽어오기', command=clicked_read_text)
         read_text_button.pack(padx=2, pady=2, anchor='nw')
     
         # Packing the text list below the button
-        write_tab_text_list = ScrollableList(left_frame, ScrollableListType.RADIO_BUTTON, None)
+        from oot.gui.subframes.common import ScrollableList, ScrollableListType
+        from oot.control.low_write_control import WriteTextListHandler
+        write_tab_text_list = ScrollableList(left_frame, ScrollableListType.RADIO_BUTTON, WriteTextListHandler())
         write_tab_text_list.text.config(width=20)
         write_tab_text_list.pack(padx=2, pady=2, fill="both", expand=True)
         write_tab_text_list.reset()
@@ -95,6 +88,7 @@ class WriteFrame:
         write_tab_right_label_font_color = ttk.Label(b, text='폰트 색상 :')
         write_tab_right_label_font_color.grid(column=0, row=4, columnspan=2, sticky=tk.W)
 
+        from oot.control.low_write_control import choose_color
         button_color = tk.Button(b, text='...', bg='yellow', command=choose_color)
         button_color.grid(column=0, row=5, columnspan=1, sticky=tk.W + tk.E)
         WriteFrame.button_color = button_color
@@ -136,7 +130,6 @@ class WriteFrame:
         write_tab_text_final = tk.Text(write_tab_trans_frm, height=3)
         write_tab_text_final.grid(column=0, row=5, sticky=tk.W+tk.E+tk.N+tk.S)
 
-        from oot.gui.low_frame import LowFrame
         WriteFrame.write_tab_text_org = write_tab_text_org
         WriteFrame.write_tab_text_google = write_tab_text_google
         WriteFrame.write_tab_text_final = write_tab_text_final
@@ -155,24 +148,9 @@ class WriteFrame:
                         LowFrame.reset_translation_target_text_in_write_tab(radiobuttons.text_list[selected_idx])
 
             
-    def clicked_read_text(self):
-        from oot.data.data_manager import DataManager
-
-        texts = DataManager.get_texts_from_image()
-        if texts is None:
-            return
-
-        # Clear existing radio buttons
-        write_tab_text_list = WriteFrame.write_tab_text_list
-        write_tab_text_list.reset()
-
-        # Add OCR texts as radio buttons
-        for i, text in enumerate(texts):
-            write_tab_text_list.add(text, i)
-            
     @classmethod
     def reset_write_tab_data(cls, texts=None):
-        print ('[LowFrame.resetWriteTabData] called...')
+        print ('[WriteFrame.resetWriteTabData] called...')
 
         # clear test list found in the image
         cls.write_tab_text_list.reset(texts)
@@ -181,3 +159,4 @@ class WriteFrame:
         cls.write_tab_text_org.delete('1.0', END)
         cls.write_tab_text_google.delete('1.0', END)
         cls.write_tab_text_final.delete('1.0', END)
+        
