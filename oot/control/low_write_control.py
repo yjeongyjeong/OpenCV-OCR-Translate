@@ -37,7 +37,7 @@ def clicked_read_text():
         print('[low_write_control] clicked_search_text() called!!...')
         from oot.data.data_manager import DataManager
         texts = DataManager.get_texts_from_image()
-        print(f'[low_write_control] clicked_search_text() result : {texts}')
+
         if texts is None:
             return
 
