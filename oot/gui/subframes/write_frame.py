@@ -5,6 +5,8 @@ from tkinter import messagebox
 import googletrans
 from googletrans import Translator
 from httpcore import SyncHTTPProxy
+from PIL import Image, ImageDraw, ImageFont
+
     
 ENABLE_PROXY = False
 
@@ -60,8 +62,8 @@ class WriteFrame:
         write_tab_right_label_font_style = ttk.Label(b, text='폰트 스타일 :')
         write_tab_right_label_font_style.grid(column=0, row=0, columnspan=2, sticky=tk.W)
 
-        combo_box = ttk.Combobox(b)
-        combo_box.grid(column=0, row=1, columnspan=4, sticky=tk.W + tk.E)
+        self.combo_box = ttk.Combobox(b)
+        self.combo_box.grid(column=0, row=1, columnspan=4, sticky=tk.W + tk.E)
 
         write_tab_right_label_font_size = ttk.Label(b, text='폰트 사이즈 :')
         write_tab_right_label_font_size.grid(column=0, row=2, columnspan=2, sticky=tk.W)
@@ -76,7 +78,7 @@ class WriteFrame:
                 if 1 <= value <= 60:
                     return True
             messagebox.showwarning("경고", "1~60까지 숫자만 입력해주세요")
-            combo_box2.set(default_font_size)  # 경고 후 기본값으로 되돌림
+            self.combo_box2.set(default_font_size)  # 경고 후 기본값으로 되돌림
 
             return False
 
@@ -85,9 +87,9 @@ class WriteFrame:
         validate_cmd = self.root.register(validate_font_size)
         
         # Spinbox 추가 - 값의 범위를 1에서 60으로 설정, 입력 검증 추가
-        combo_box2 = ttk.Spinbox(b, from_=1, to=60, validate='focusout', validatecommand=(validate_cmd, '%P'))
-        combo_box2.set(default_font_size)  # 기본값 설정
-        combo_box2.grid(column=0, row=3, columnspan=2, sticky=tk.W + tk.E)
+        self.combo_box2 = ttk.Spinbox(b, from_=1, to=60, validate='focusout', validatecommand=(validate_cmd, '%P'))
+        self.combo_box2.set(default_font_size)  # 기본값 설정
+        self.combo_box2.grid(column=0, row=3, columnspan=2, sticky=tk.W + tk.E)
 
         write_tab_right_label_font_color = ttk.Label(b, text='폰트 색상 :')
         write_tab_right_label_font_color.grid(column=0, row=4, columnspan=2, sticky=tk.W)
@@ -97,19 +99,19 @@ class WriteFrame:
         button_color.grid(column=0, row=5, columnspan=1, sticky=tk.W + tk.E)
         WriteFrame.button_color = button_color
 
-        write_tab_right_btn_apply = ttk.Button(c, text='적용')
+        write_tab_right_btn_apply = ttk.Button(c, text='적용', command=self.apply_text_to_image)
         write_tab_right_btn_apply.pack(side='left')
         write_tab_right_btn_cancel = ttk.Button(c, text='취소')
         write_tab_right_btn_cancel.pack(side='left')
 
         # init font list
         font_list = font.families()
-        combo_box['values'] = font_list
+        self.combo_box['values'] = font_list
         try:
             default_font_index = font_list.index('맑은 고딕')
         except ValueError as e:
             default_font_index = 0
-        combo_box.current(default_font_index)
+        self.combo_box.current(default_font_index)
 
 
 
@@ -229,5 +231,47 @@ class WriteFrame:
         # TODO: clear 'style tool' area
     
     @classmethod    
-    def reset_color_of_button_in_write_tab(color='#FFFF00'):
+    def reset_color_of_button_in_write_tab(cls, color='#FFFF00'):
         WriteFrame.button_color.configure(bg=color)
+        
+    def apply_text_to_image(self):
+        # 현재 선택된 폰트 스타일, 크기, 색상을 가져옵니다.
+        font_style = self.combo_box.get()
+        font_size = int(self.combo_box2.get())
+        font_color = self.button_color.cget('bg')
+
+        # 적용할 텍스트를 가져옵니다.
+        apply_text = self.write_tab_text_final.get('1.0', 'end-1c')
+
+        # 현재 작업 중인 파일을 가져옵니다.
+        from oot.data.data_manager import DataManager
+        out_file_path = DataManager.get_output_file()
+
+        # 이미지를 열고 텍스트를 추가합니다.
+        try:
+            font = ImageFont.truetype(font_style, font_size)
+        except IOError:
+            # 폰트가 사용 불가능할 경우 기본 폰트를 사용합니다.
+            font = ImageFont.load_default()
+
+        image = Image.open(out_file_path)
+        draw = ImageDraw.Draw(image)
+
+        # 선택된 텍스트의 위치를 가져옵니다.
+        work_file = DataManager.get_work_file()
+        selected_idx = self.write_tab_text_list.radio_value.get()
+        try:
+            start_pos, _ = work_file.get_rectangle_position_by_texts_index(selected_idx)
+            draw.text(start_pos, "APPLE", font=font, fill=font_color)
+            print(f"텍스트 '{apply_text}'가 이미지에 추가되었습니다.")
+
+            # 변경된 이미지를 저장하지 않고 미들 프레임에 업데이트합니다.
+            from oot.gui.middle_frame import MiddleFrame
+            MiddleFrame.out_canvas_worker.set_image(image)
+            MiddleFrame.redraw_canvas_images()
+        except IndexError:
+            print(f"IndexError: Text index {selected_idx} out of range.")
+
+
+# print(f"텍스트 '{apply_text}'가 이미지에 추가되었습니다.")
+# draw.text(start_pos, "APPLE", font=font, fill=font_color)
