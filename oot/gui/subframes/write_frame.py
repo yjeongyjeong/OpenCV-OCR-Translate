@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 from tkinter import ttk, font
 from tkinter import END
@@ -69,15 +70,15 @@ class WriteFrame:
         write_tab_right_label_font_size.grid(column=0, row=2, columnspan=2, sticky=tk.W)
 
         # 기본값 설정
-        default_font_size = 5
+        default_font_size = 10
         
         # 입력 검증 함수
         def validate_font_size(input_str):
             if input_str.isdigit():
                 value = int(input_str)
-                if 1 <= value <= 60:
+                if 1 <= value <= 90:
                     return True
-            messagebox.showwarning("경고", "1~60까지 숫자만 입력해주세요")
+            messagebox.showwarning("경고", "1~90까지 숫자만 입력해주세요")
             self.combo_box2.set(default_font_size)  # 경고 후 기본값으로 되돌림
 
             return False
@@ -86,8 +87,8 @@ class WriteFrame:
         # 입력 검증을 위한 Tkinter 변수와 함수 설정
         validate_cmd = self.root.register(validate_font_size)
         
-        # Spinbox 추가 - 값의 범위를 1에서 60으로 설정, 입력 검증 추가
-        self.combo_box2 = ttk.Spinbox(b, from_=1, to=60, validate='focusout', validatecommand=(validate_cmd, '%P'))
+        # Spinbox 추가 - 값의 범위를 1에서 90으로 설정, 입력 검증 추가
+        self.combo_box2 = ttk.Spinbox(b, from_=1, to=90, validate='focusout', validatecommand=(validate_cmd, '%P'))
         self.combo_box2.set(default_font_size)  # 기본값 설정
         self.combo_box2.grid(column=0, row=3, columnspan=2, sticky=tk.W + tk.E)
 
@@ -105,7 +106,16 @@ class WriteFrame:
         write_tab_right_btn_cancel.pack(side='left')
 
         # init font list
-        font_list = font.families()
+        #font_list = font.families()
+        # 폴더 내의 모든 폰트 가져오기
+        fonts_folder = "./fonts"
+        all_fonts = []
+
+        if os.path.isdir(fonts_folder):
+            all_fonts = [os.path.join(fonts_folder, f) for f in os.listdir(fonts_folder) if f.endswith('.ttf')]
+
+        # 폰트 파일 이름에서 확장자를 제거하고 리스트에 추가
+        font_list = [os.path.basename(font).split('.')[0] for font in all_fonts]
         self.combo_box['values'] = font_list
         try:
             default_font_index = font_list.index('AppleMyungjo') #MAC
@@ -233,9 +243,15 @@ class WriteFrame:
     @classmethod    
     def reset_color_of_button_in_write_tab(cls, color='#FFFF00'):
         WriteFrame.button_color.configure(bg=color)
-        
+
+    def get_complementary_color(self, color):
+        """
+        주어진 RGB 색상의 보색을 계산합니다.
+        """
+        r, g, b = color
+        return (255 - r, 255 - g, 255 - b)
+    
     def apply_text_to_image(self):
-        # 선택된 텍스트의 위치를 가져옵니다.
         from oot.data.data_manager import DataManager
         work_file = DataManager.get_work_file()
         selected_idx = self.write_tab_text_list.radio_value.get()
@@ -244,42 +260,34 @@ class WriteFrame:
             box_width = end_pos[0] - start_pos[0]
             box_height = end_pos[1] - start_pos[1]
             
-            # 적용할 텍스트를 가져옵니다.
             apply_text = self.write_tab_text_final.get('1.0', 'end-1c')
-
-            # 텍스트 길이에 맞춰 초기 폰트 크기 계산
-            estimated_font_size = min(box_height, max(int(box_width / len(apply_text)), 1))
-
-            # 폰트 스타일과 색상을 가져옵니다.
+            estimated_font_size = box_height
             font_style = self.combo_box.get()
-            font_color = self.button_color.cget('bg')
-
-            # 폰트 크기 스핀박스에 초기 폰트 크기 설정
             self.combo_box2.set(estimated_font_size)
 
+            font_path = os.path.join("./fonts", f"{font_style}.ttf")
             try:
-                font = ImageFont.truetype(font_style, estimated_font_size)
+                font = ImageFont.truetype(font_path, estimated_font_size)
             except IOError:
-                # 폰트가 사용 불가능할 경우 기본 폰트를 사용합니다.
                 font = ImageFont.load_default()
 
-            # 현재 작업 중인 파일을 가져옵니다.
             out_file_path = DataManager.get_output_file()
-            image = Image.open(out_file_path)  # 이미지 열기
-
-            # 텍스트를 이미지에 추가
+            image = Image.open(out_file_path)
             draw = ImageDraw.Draw(image)
+            
+            # 상자의 중앙에 있는 픽셀의 색상을 가져옵니다.
+            mid_x = (start_pos[0] + end_pos[0]) // 2
+            mid_y = (start_pos[1] + end_pos[1]) // 2
+            background_color = image.getpixel((mid_x, mid_y))
+            
+            # 배경색의 보색을 폰트 색상으로 설정
+            font_color = self.get_complementary_color(background_color)
+
             draw.text(start_pos, apply_text, font=font, fill=font_color)
             print(f"텍스트 '{apply_text}'가 이미지에 추가되었습니다.")
 
-            # 변경된 이미지를 미들 프레임에 업데이트
             from oot.gui.middle_frame import MiddleFrame
             MiddleFrame.out_canvas_worker.set_image(image)
             MiddleFrame.redraw_canvas_images()
         except IndexError:
             print(f"IndexError: Text index {selected_idx} out of range.")
-
-
-
-# print(f"텍스트 '{apply_text}'가 이미지에 추가되었습니다.")
-# draw.text(start_pos, "APPLE", font=font, fill=font_color)
