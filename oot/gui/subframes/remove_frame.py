@@ -1,6 +1,6 @@
 from tkinter import ttk
 
-from oot.gui.subframes.common import ScrollableList, ScrollableListType
+from oot.gui.common import ScrollableList, ScrollableListType
 from oot.control.low_remove_control import RemoveTextListHandler
 
 
