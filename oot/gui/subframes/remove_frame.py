@@ -25,6 +25,11 @@ class RemoveFrame:
         btn_remove_text.pack(side='left')
         btn_revoke_image.pack(side='left')
 
+        from oot.control.low_remove_control import RemovePostDrawHandler
+        from oot.gui.middle_frame import MiddleFrame
+        MiddleFrame.src_canvas_worker.set_post_draw_listener(RemovePostDrawHandler())
+        MiddleFrame.out_canvas_worker.set_post_draw_listener(RemovePostDrawHandler())
+
         remove_tab_down_frm = ttk.Frame(root)
         RemoveFrame.__set_remove_tab_text_list(remove_tab_down_frm)
 

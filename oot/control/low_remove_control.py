@@ -1,7 +1,34 @@
 from abc import *
 from oot.data.data_manager import DataManager
-from oot.gui.common import ScrollableListListener
+from oot.gui.common import ScrollableListListener, CanvasWorkerPostDrawListner
 
+
+class RemovePostDrawHandler(CanvasWorkerPostDrawListner):
+    def do_post_draw(self, canvas, scale_ratio):
+        from oot.gui.subframes.remove_frame import RemoveFrame
+        from oot.gui.low_frame import LowFrame
+        # draw lines for selected text in check list of remove tab in LowFrame
+        tab_idx = LowFrame.notebook.index(LowFrame.notebook.select())
+        if tab_idx == 0:
+            idx = 0
+            list_values = RemoveFrame.remove_tab_text_list.list_values
+            if list_values == None or len(list_values) == 0:
+                return
+            for item in RemoveFrame.remove_tab_text_list.list_values:
+                if item.get() == True:
+                    image_index = DataManager.get_image_index()
+                    work_file = DataManager.folder_data.get_file_by_index(image_index) # FileData
+                    start_pos, end_pos = work_file.get_rectangle_position_by_texts_index(idx)
+
+                    canvas.create_rectangle(
+                        int(scale_ratio*start_pos[0]),  # start x 
+                        int(scale_ratio*start_pos[1]),  # start y
+                        int(scale_ratio*end_pos[0]),    # end x
+                        int(scale_ratio*end_pos[1]),    # end y
+                        #outline='green'
+                        outline='#00ff00'
+                    )
+                idx = idx + 1
 
 class RemoveTextListHandler(ScrollableListListener):
     def selected_radio_list(self, text):

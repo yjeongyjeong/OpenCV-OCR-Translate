@@ -8,22 +8,25 @@ from oot.gui.subframes.write_frame import WriteFrame
 
 class WritePostDrawHandler(CanvasWorkerPostDrawListner):
     def do_post_draw(self, canvas, scale_ratio):
+        from oot.gui.low_frame import LowFrame
         # draw lines for selected text in check list of write tab in LowFrame
-        if WriteFrame.write_tab_text_list is not None and WriteFrame.write_tab_text_list.radio_value is not None:
-            idx = WriteFrame.write_tab_text_list.radio_value.get()
-            image_index = DataManager.get_image_index()
-            work_file = DataManager.folder_data.get_file_by_index(image_index) # FileData
-            try:
-                start_pos, end_pos = work_file.get_rectangle_position_by_texts_index(idx)
-                canvas.create_rectangle(
-                    int(scale_ratio*start_pos[0]),  # start x 
-                    int(scale_ratio*start_pos[1]),  # start y
-                    int(scale_ratio*end_pos[0]),    # end x
-                    int(scale_ratio*end_pos[1]),    # end y
-                    outline='#FF00FF'
-                )
-            except IndexError:
-                print(f"IndexError: Text index {idx} out of range.")
+        tab_idx = LowFrame.notebook.index(LowFrame.notebook.select())
+        if tab_idx == 1:
+            if WriteFrame.write_tab_text_list is not None and WriteFrame.write_tab_text_list.radio_value is not None:
+                idx = WriteFrame.write_tab_text_list.radio_value.get()
+                image_index = DataManager.get_image_index()
+                work_file = DataManager.folder_data.get_file_by_index(image_index) # FileData
+                try:
+                    start_pos, end_pos = work_file.get_rectangle_position_by_texts_index(idx)
+                    canvas.create_rectangle(
+                        int(scale_ratio*start_pos[0]),  # start x 
+                        int(scale_ratio*start_pos[1]),  # start y
+                        int(scale_ratio*end_pos[0]),    # end x
+                        int(scale_ratio*end_pos[1]),    # end y
+                        outline='#FF00FF'
+                    )
+                except IndexError:
+                    print(f"IndexError: Text index {idx} out of range.")
 
 
 class WriteTextListHandler(ScrollableListListener):
