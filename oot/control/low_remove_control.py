@@ -65,3 +65,9 @@ def clicked_remove_text():
     from oot.gui.middle_frame import MiddleFrame
     print('[low_remove_control] clicked_search_text() called!!...')
     MiddleFrame.remove_selected_texts()
+
+def clicked_revoke_image(): 
+    from oot.gui.middle_frame import MiddleFrame
+    print('[low_remove_control] clicked_revoke_image() called!!...')
+    temp_file = DataManager.get_output_file()
+    MiddleFrame.temp_out_canvas_image(temp_file)
