@@ -1,47 +1,39 @@
 from tkinter import ttk
-from tkinter.scrolledtext import ScrolledText
+
 from oot.gui.common import ScrollableList, ScrollableListType
 
 class MosaicFrame:
     root = None
+    mosaic_tab_face_list = None
+
     def __init__(self, mosaic):
-        # top button frame
-        # mosaic_frm = ttk.Frame(mosaic)
-        # mosaic_frm.pack(fill = 'both', side = 'left')
-        # self.__init_mosaic_tab(mosaic)
         self.__init_mosaic_area_detection(mosaic)
         self.__init_mosaic_model_apply(mosaic)
         
-    # ----------------------------------------------------------------
-    # initial tab
-    # ----------------------------------------------------------------     
-    
-    # def __init_mosaic_tab(self, mosaic):
-    #     mosaic_tab_list = ScrollableList(mosaic, ScrollableListType.RADIO_BUTTON)
-    #     mosaic_tab_list.text.config(width=80)
-    #     mosaic_tab_list.pack(padx=2, pady=2, side="left", fill="y")
-    #     mosaic_tab_list.reset()
+        from oot.control.low_mosaic_control import MosaicPostDrawHandler
+        from oot.gui.middle_frame import MiddleFrame
+        MiddleFrame.src_canvas_worker.set_post_draw_listener(MosaicPostDrawHandler())
+        MiddleFrame.out_canvas_worker.set_post_draw_listener(MosaicPostDrawHandler())
 
-    #     MosaicFrame.mosaic_tab_list = mosaic_tab_list
-        
     # ----------------------------------------------------------------
     # mosaic area detection
     # ---------------------------------------------------------------- 
-    
     def __init_mosaic_area_detection(self, mosaic_frm):
         a = ttk.LabelFrame(mosaic_frm, text='보호 영역 검출')
         a.pack(fill='both', side='left', expand=True)
         
-        image_select = ttk.Button(a, text='보호 이미지 선택')
+        from oot.control.low_mosaic_control import search_faces
+        image_select = ttk.Button(a, text='얼굴 검출', command=search_faces)
         image_select.grid(column=0, row=0, columnspan=1, sticky='W')
         
-        mosaic_tab_list = ScrollableList(a, ScrollableListType.RADIO_BUTTON, None)
+        from oot.control.low_mosaic_control import MosaicTextListHandler
+        mosaic_tab_list = ScrollableList(a, ScrollableListType.CHECK_BUTTON, MosaicTextListHandler())
         mosaic_tab_list.text.config(width=100)
-        # mosaic_tab_list.grid(column=0, row=1, columnspan=2, sticky='EW')
+        mosaic_tab_list.grid(column=0, row=1, columnspan=2, sticky='EW')
         mosaic_tab_list.reset()
 
-        MosaicFrame.mosaic_tab_list = mosaic_tab_list
-         
+        MosaicFrame.mosaic_tab_face_list = mosaic_tab_list
+
     # ----------------------------------------------------------------
     # mosaic model apply
     # ---------------------------------------------------------------- 
@@ -69,3 +61,16 @@ class MosaicFrame:
         model_apply.pack(side='left')
         model_cancel = ttk.Button(c, text='취소')
         model_cancel.pack(side='left')
+
+    @classmethod
+    def get_face_list(cls):
+        return cls.mosaic_tab_face_list
+
+    @classmethod
+    def reset_mosaic_tab_data(cls):
+        # data 를 읽어 온다
+        from oot.data.data_manager import DataManager
+        faces = DataManager.get_work_file().get_faces_as_string()
+
+        # 읽어온 data 로 변경(None 이면 list 모두 clear)
+        cls.mosaic_tab_face_list.reset(faces)
