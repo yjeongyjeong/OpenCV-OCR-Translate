@@ -21,7 +21,6 @@ class WriteTextListHandler(ScrollableListListener):
         text_info = text.split('|', 1)
 
         # get selected item's info (id, text, status)
-        from oot.gui.subframes.write_frame import WriteFrame
         selected_item_id = int(text_info[0])
         selected_item_text = text_info[1]
         print ('[WriteTextListHandler] selected_radio_list() : id = ', selected_item_id)
@@ -79,9 +78,13 @@ def clicked_read_text():
 
         WriteFrame.reset_write_tab_data(texts)
 
-        # 첫 번째 라디오 버튼을 선택하고 상자 그리기
+        # 첫 번째 라디오 버튼을 선택
         WriteFrame.write_tab_text_list.radio_value.set(0)
         WriteFrame.reset_translation_target_text_in_write_tab(texts[0])
+        
+        # 첫 번째 텍스트로 selected_radio_list 호출
+        WriteFrame.write_tab_text_list.listener.selected_radio_list(f"0|{texts[0]}")
+
 
         # 이미지에 상자 그리기
         from oot.gui.middle_frame import MiddleFrame
