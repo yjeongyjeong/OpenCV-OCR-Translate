@@ -1,14 +1,12 @@
 import glob
 import os
 import shutil
-import sys
 import easyocr
+import numpy
 
-from PIL import ImageTk, Image
 from tkinter import messagebox as mb
 
 # FolderData > FileData > TextData
-
 class FolderData:
     
     def __init__(self, path):
@@ -56,10 +54,37 @@ class FileData:
         self.__name = file
         self.__texts = []   # TextData 객체를 의미
         self.__is_ocr_executed = False
+        self.__faces = None
 
     def get_file_name(self):
         return self.__name
 
+    def clear_faces(self):
+        self.__faces = None
+
+    def get_faces(self):
+        return self.__faces
+
+    def get_faces_as_string(self):
+        faces = []
+        if self.__faces == None or len(self.__faces) == 0:
+            return None
+        for f in self.__faces:
+            faces.append(f.get_name())
+        return faces
+
+    def set_faces(self, positions):
+        """
+        positions:
+            얼굴이 detect 된 영역에 대한 좌표값을 list 가 입력된다.
+            예를 들어 얼굴이 2개 검출 된 경우 아래와 같은 좌표값이 입력된다.
+            [[216 116 195 195],[101 188 197 197]]
+        """
+        if positions is not None and type(positions) is numpy.ndarray and len(positions) > 0:
+            self.__faces = []
+            for index, p in enumerate(positions):
+                self.__faces.append(FaceData('얼굴-'+"{:04d}".format(index+1), p))
+        
     def is_ocr_executed(self):
         return self.__is_ocr_executed        
         
@@ -110,6 +135,20 @@ class FileData:
         rectangle_position = self.get_text_by_index(index).get_position_info()
         start_pos, end_pos = rectangle_position[0], rectangle_position[2]
         return start_pos, end_pos
+
+class FaceData:
+    def __init__(self, name, position):
+        self.__name = name
+        self.__position = position
+
+    def get_name(self):
+        return self.__name
+
+    def get_position_info(self):
+        return self.__position
+    
+    def __str__(self):
+        return self.__name
 
 class TextData:
     def __init__(self, text, position):

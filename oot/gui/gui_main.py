@@ -47,7 +47,11 @@ class GuiManager:
         # clear all data in 'write tab' of 'WriteFrame'
         from oot.gui.subframes.write_frame import WriteFrame
         WriteFrame.reset_write_tab_data(texts)
-        
+
+        # clear all data in 'mosaic tab'
+        from oot.gui.subframes.mosaic_frame import MosaicFrame
+        MosaicFrame.reset_mosaic_tab_data()
+
         from oot.gui.middle_frame import MiddleFrame
         # Change images in canvases of 'MiddleFrame' with the 1st image of new dir
         MiddleFrame.reset_canvas_images(work_file)
