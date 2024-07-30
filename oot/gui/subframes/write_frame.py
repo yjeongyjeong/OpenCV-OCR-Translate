@@ -39,7 +39,9 @@ class WriteFrame:
         # Packing the text list below the button
         from oot.gui.subframes.common import ScrollableList, ScrollableListType
         from oot.control.low_write_control import WriteTextListHandler
-        write_tab_text_list = ScrollableList(left_frame, ScrollableListType.RADIO_BUTTON, WriteTextListHandler())
+        # WriteFrame 인스턴스가 이미 생성되어 있다고 가정
+        write_frame_instance = self
+        write_tab_text_list = ScrollableList(left_frame, ScrollableListType.RADIO_BUTTON, WriteTextListHandler(write_frame_instance))
         write_tab_text_list.text.config(width=20)
         write_tab_text_list.pack(padx=2, pady=2, fill="both", expand=True)
         write_tab_text_list.reset()
@@ -96,13 +98,13 @@ class WriteFrame:
         write_tab_right_label_font_color.grid(column=0, row=4, columnspan=2, sticky=tk.W)
 
         from oot.control.low_write_control import choose_color
-        button_color = tk.Button(b, text='...', bg='yellow', command=choose_color)
+        button_color = tk.Button(b, text='...', bg='#FFFF00', command=choose_color)
         button_color.grid(column=0, row=5, columnspan=1, sticky=tk.W + tk.E)
         WriteFrame.button_color = button_color
 
         write_tab_right_btn_apply = ttk.Button(c, text='적용', command=self.apply_text_to_image)
         write_tab_right_btn_apply.pack(side='left')
-        write_tab_right_btn_cancel = ttk.Button(c, text='취소')
+        write_tab_right_btn_cancel = ttk.Button(c, text='복귀')
         write_tab_right_btn_cancel.pack(side='left')
 
         # init font list
@@ -237,9 +239,7 @@ class WriteFrame:
         cls.write_tab_text_google.insert("end", result.text)
         cls.write_tab_text_google.config(state='disabled')
         cls.write_tab_text_final.insert("end", result.text)
-        
-        # TODO: clear 'style tool' area
-    
+            
     @classmethod    
     def reset_color_of_button_in_write_tab(cls, color='#FFFF00'):
         WriteFrame.button_color.configure(bg=color)
@@ -251,43 +251,46 @@ class WriteFrame:
         r, g, b = color
         return (255 - r, 255 - g, 255 - b)
     
+    def hex_to_rgb(self, hex_color):
+        """Converts a hex color string to an RGB tuple."""
+        hex_color = hex_color.lstrip('#')
+        return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+    
     def apply_text_to_image(self):
         from oot.data.data_manager import DataManager
         work_file = DataManager.get_work_file()
         selected_idx = self.write_tab_text_list.radio_value.get()
+        
         try:
             start_pos, end_pos = work_file.get_rectangle_position_by_texts_index(selected_idx)
-            box_width = end_pos[0] - start_pos[0]
-            box_height = end_pos[1] - start_pos[1]
             
             apply_text = self.write_tab_text_final.get('1.0', 'end-1c')
-            estimated_font_size = box_height
+            estimated_font_size = int(self.combo_box2.get())  # Get the selected font size
             font_style = self.combo_box.get()
-            self.combo_box2.set(estimated_font_size)
-
             font_path = os.path.join("./fonts", f"{font_style}.ttf")
+            
             try:
                 font = ImageFont.truetype(font_path, estimated_font_size)
             except IOError:
                 font = ImageFont.load_default()
+                print(f"Could not load font '{font_style}', using default font.")
+
 
             out_file_path = DataManager.get_output_file()
             image = Image.open(out_file_path)
             draw = ImageDraw.Draw(image)
             
-            # 상자의 중앙에 있는 픽셀의 색상을 가져옵니다.
-            mid_x = (start_pos[0] + end_pos[0]) // 2
-            mid_y = (start_pos[1] + end_pos[1]) // 2
-            background_color = image.getpixel((mid_x, mid_y))
-            
             # 배경색의 보색을 폰트 색상으로 설정
-            font_color = self.get_complementary_color(background_color)
+            background_color_hex = self.button_color.cget('bg')
+            # Convert the hex color to RGB tuple
+            background_color = self.hex_to_rgb(background_color_hex)
 
-            draw.text(start_pos, apply_text, font=font, fill=font_color)
+            draw.text(start_pos, apply_text, font=font, fill=background_color)
             print(f"텍스트 '{apply_text}'가 이미지에 추가되었습니다.")
 
             from oot.gui.middle_frame import MiddleFrame
             MiddleFrame.out_canvas_worker.set_image(image)
             MiddleFrame.redraw_canvas_images()
+            
         except IndexError:
             print(f"IndexError: Text index {selected_idx} out of range.")
