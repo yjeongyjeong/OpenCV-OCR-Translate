@@ -1,4 +1,5 @@
 import cv2
+from tkinter import messagebox as mb
 
 from oot.data.data_manager import DataManager
 from oot.gui.common import CanvasWorkerPostDrawListner, ScrollableListListener
@@ -61,6 +62,7 @@ def search_faces():
     # 저장된 face list 얻기
     faces_names = DataManager.get_work_file().get_faces_as_string()
     if faces_names == None or len(faces_names) == 0:
+        mb.showwarning("경고", "이미지에서 얼굴을 찾지 못했습니다")
         return
 
     # face list 를 scrollable list 에 set
