@@ -120,7 +120,7 @@ class WriteFrame:
         font_list = [os.path.basename(font).split('.')[0] for font in all_fonts]
         self.combo_box['values'] = font_list
         try:
-            default_font_index = font_list.index('AppleMyungjo') #MAC
+            default_font_index = font_list.index('tvN 즐거운이야기 Medium')
         except ValueError as e:
             default_font_index = 0
         self.combo_box.current(default_font_index)
