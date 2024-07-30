@@ -6,7 +6,7 @@ from abc import *
 
 class CanvasWorkerPostDrawListner(metaclass=ABCMeta):
     @abstractmethod
-    def do_post_draw(self, canvas, scale_ratio):
+    def do_post_draw(self, canvas, scale_ratio, rectangle_ids):
         pass
     
 class CanvasWorker:
@@ -21,6 +21,7 @@ class CanvasWorker:
         self.image = Image.open(img_file)
         self.photoimage = None
         self.listeners = []
+        self.rectangle_ids = []  # 사각형이 그려지는 경우, 사각형 ID를 저장할 변수
     
     def draw_image(self):
         self.photoimage = ImageTk.PhotoImage(file=self.img_file)
@@ -42,8 +43,13 @@ class CanvasWorker:
             self.canvas.create_image(0,0, image=self.photoimage, anchor="nw")
             self.scale_ratio = w/w1
 
+        # 기존 사각형 삭제
+        for rectangle_id in self.rectangle_ids:
+            self.canvas.delete(rectangle_id)
+        self.rectangle_ids.clear()
+
         for listener in self.listeners:
-            listener.do_post_draw(self.canvas, self.scale_ratio)
+            listener.do_post_draw(self.canvas, self.scale_ratio, self.rectangle_ids)
 
     def change_image_file(self, img_file):
         self.img_file = img_file
