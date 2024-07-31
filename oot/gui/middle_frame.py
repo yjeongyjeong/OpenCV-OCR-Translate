@@ -138,3 +138,47 @@ class MiddleFrame:
         x_mid = int((x1 + x2)/2)
         y_mid = int((y1 + y2)/2)
         return (x_mid, y_mid)
+    
+    @classmethod
+    def apply_mosaic_to_selected_faces(cls):
+        import cv2
+        import numpy as np
+        from oot.data.data_manager import DataManager
+        from oot.gui.subframes.mosaic_frame import MosaicFrame
+        from oot.control.low_mosaic_control import apply_mosaic
+        print('[MiddleFrame] apply_mosaic_to_selected_faces() called...')
+        
+        # 데이터 관리자에서 작업 파일과 얼굴 데이터를 가져옴
+        image_index = DataManager.get_image_index()
+        work_file = DataManager.folder_data.get_file_by_index(image_index) # FileData
+        faces = work_file.get_faces()  # 해당 워크 파일에 해당하는 FaceData의 좌표
+        if faces is None:
+            print('[MiddleFrame] apply_mosaic_to_selected_faces() : no faces were selected!')
+            return None
+
+        # 선택된 얼굴 영역 수집
+        selected_faces = []
+        list_values = MosaicFrame.mosaic_tab_face_list.list_values
+        if list_values is None or len(list_values) == 0:
+            print('[MiddleFrame] apply_mosaic_to_selected_faces() : no faces were selected in the list!')
+            return
+
+        for index, item in enumerate(list_values):
+            if item.get() == True:
+                pos_info = faces[index].get_position_info()
+                selected_faces.append(pos_info)
+        
+        if not selected_faces:
+            print('[MiddleFrame] apply_mosaic_to_selected_faces() : no faces selected for mosaic!')
+            return
+
+        # 현재 캔버스에 있는 이미지를 가져옴
+        img_cv2 = cv2.cvtColor(np.array(cls.out_canvas_worker.get_image()), cv2.COLOR_RGB2BGR)
+
+        # 모자이크 적용
+        img_cv2 = apply_mosaic(img_cv2, selected_faces)
+
+        # 업데이트된 이미지를 캔버스에 설정
+        img_conv = Image.fromarray(cv2.cvtColor(img_cv2, cv2.COLOR_BGR2RGB))
+        cls.out_canvas_worker.set_image(img_conv)
+        cls.redraw_canvas_images()

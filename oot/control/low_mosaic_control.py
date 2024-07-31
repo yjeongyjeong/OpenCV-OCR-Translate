@@ -54,7 +54,7 @@ def search_faces():
     image = cv2.imread(DataManager.get_output_file())
     gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
     face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-    detected_faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+    detected_faces = face_cascade.detectMultiScale(gray, scaleFactor=1.14, minNeighbors=5, minSize=(10, 10))
     
     # 얼굴 검출 결과 DataManager에 저장
     DataManager.get_work_file().set_faces(detected_faces)
@@ -69,3 +69,16 @@ def search_faces():
     from oot.gui.subframes.mosaic_frame import MosaicFrame
     scrollable_frame = MosaicFrame.get_face_list()
     scrollable_frame.reset(faces_names)
+
+def apply_mosaic(image, positions, mosaic_ratio=0.1):
+    for (start_x, start_y, width, height) in positions:
+        end_x = start_x + width
+        end_y = start_y + height
+        small = cv2.resize(image[start_y:end_y, start_x:end_x], None, fx=mosaic_ratio, fy=mosaic_ratio, interpolation=cv2.INTER_NEAREST)
+        image[start_y:end_y, start_x:end_x] = cv2.resize(small, (width, height), interpolation=cv2.INTER_NEAREST)
+    return image
+
+def clicked_mosaic_faces():
+    from oot.gui.middle_frame import MiddleFrame
+    print('[low_remove_control] clicked_mosaic_faces() called!!...')
+    MiddleFrame.apply_mosaic_to_selected_faces()
