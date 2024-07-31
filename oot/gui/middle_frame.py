@@ -102,42 +102,50 @@ class MiddleFrame:
     
     @classmethod
     def __inpaint_for_selected_texts(cls, img_path, texts_position):
-        import math
         import numpy as np
         import cv2
-        import easyocr
         from oot.gui.subframes.remove_frame import RemoveFrame
-        # texts # Example: [[24, 48], [345, 48], [345, 109], [24, 109]]
+        # texts # Example: [[24, 48], [345, 48], [345, 109], [24, 109]] => [y,x] 순서
         print ('[MiddleFrame] __inpaint_for_selected_texts() called...')
-        
+
         # generate (word, box) tuples 
         img = cv2.cvtColor(cv2.imread(img_path), cv2.COLOR_BGR2RGB)
         mask = np.zeros(img.shape[:2], dtype="uint8")
-
         img_return = None
         idx = 0
+
         for t in texts_position:
             list_status = RemoveFrame.remove_tab_text_list.list_values
             if list_status[idx].get() == True:
                 x0, y0 = t[0]
-                x1, y1 = t[1] 
+                x1, y1 = t[1]       # 왼쪽 상단 좌표 
                 x2, y2 = t[2]
-                x3, y3 = t[3] 
+                x3, y3 = t[3]       # 오른쪽 하단 좌표 
 
-                x_mid0, y_mid0 = cls.__midpoint(x1, y1, x2, y2)
-                x_mid1, y_mi1 = cls.__midpoint(x0, y0, x3, y3)
-                thickness = int(math.sqrt( (x2 - x1)**2 + (y2 - y1)**2 ))
+                # 사각형 이미지 추출
+                roi = img[y1:y3, x3:x1]
+
+                # 그레이스케일 변환
+                gray_roi = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
+
+                # 이진화 작업
+                # Reference :
+                # - https://gaussian37.github.io/vision-opencv-threshold/
+                binary_roi = cv2.adaptiveThreshold(gray_roi, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 111, 2)
+
+                # 모폴로지 적용
+                kernel1 = cv2.getStructuringElement(cv2.MORPH_RECT, (9,9))
+                img_morpho1 = cv2.morphologyEx(binary_roi, cv2.MORPH_CLOSE, kernel1)
+                kernel2 = cv2.getStructuringElement(cv2.MORPH_RECT, (5,5))
+                img_morpho2 = cv2.dilate(img_morpho1, kernel2, iterations=1)
                 
-                cv2.line(mask, (x_mid0, y_mid0), (x_mid1, y_mi1), 255, thickness)
+                # mask에 이진화된 부분 삽입
+                mask[y1:y3, x3:x1] = img_morpho2
+
+                # inpaint 작업
                 img_return = cv2.inpaint(img, mask, 7, cv2.INPAINT_NS)
             idx = idx+1
         return img_return
-    
-    @classmethod
-    def __midpoint(cls, x1, y1, x2, y2):
-        x_mid = int((x1 + x2)/2)
-        y_mid = int((y1 + y2)/2)
-        return (x_mid, y_mid)
     
     @classmethod
     def apply_mosaic_to_selected_faces(cls):
