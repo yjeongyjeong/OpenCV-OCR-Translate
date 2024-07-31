@@ -38,6 +38,7 @@ class MosaicFrame:
     # mosaic model apply
     # ---------------------------------------------------------------- 
     def __init_mosaic_model_apply(self, mosaic_frm):
+        
         b = ttk.LabelFrame(mosaic_frm, text='모자이크 적용')
         b.pack(fill='both', side='top')
         b.columnconfigure(0, weight=1)
@@ -56,9 +57,10 @@ class MosaicFrame:
         combo_box['values'] = font_size_list
         combo_box.current(5)
         # end!
-        
-        model_apply = ttk.Button(c, text='적용')
+        from oot.control.low_mosaic_control import clicked_mosaic_faces
+        model_apply = ttk.Button(c, text='적용', command=clicked_mosaic_faces)
         model_apply.pack(side='left')
+        # from oot.control.low_mosaic_control import clicked_mosaic_cancel
         model_cancel = ttk.Button(c, text='취소')
         model_cancel.pack(side='left')
 
