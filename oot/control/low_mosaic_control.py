@@ -54,7 +54,7 @@ def search_faces():
     image = cv2.imread(DataManager.get_output_file())
     gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
     face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-    detected_faces = face_cascade.detectMultiScale(gray, scaleFactor=1.14, minNeighbors=5, minSize=(10, 10))
+    detected_faces = face_cascade.detectMultiScale(gray, scaleFactor=1.22, minNeighbors=5, minSize=(10, 10))
     
     # 얼굴 검출 결과 DataManager에 저장
     DataManager.get_work_file().set_faces(detected_faces)

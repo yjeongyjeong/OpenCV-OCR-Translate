@@ -19,7 +19,7 @@ class MosaicFrame:
     # mosaic area detection
     # ---------------------------------------------------------------- 
     def __init_mosaic_area_detection(self, mosaic_frm):
-        a = ttk.LabelFrame(mosaic_frm, text='보호 영역 검출')
+        a = ttk.LabelFrame(mosaic_frm, text='모자이크 영역 검출')
         a.pack(fill='both', side='left', expand=True)
         
         from oot.control.low_mosaic_control import search_faces
@@ -46,7 +46,7 @@ class MosaicFrame:
         c = ttk.Frame(mosaic_frm)
         c.pack(side='bottom')
         
-        mosaic_model = ttk.Label(b, text='모자이크 모델 선택')
+        mosaic_model = ttk.Label(b, text='모자이크 픽셀 선택')
         mosaic_model.grid(column=0, row=1, columnspan=2, sticky='W')
 
         combo_box = ttk.Combobox(b)
@@ -60,8 +60,8 @@ class MosaicFrame:
         from oot.control.low_mosaic_control import clicked_mosaic_faces
         model_apply = ttk.Button(c, text='적용', command=clicked_mosaic_faces)
         model_apply.pack(side='left')
-        # from oot.control.low_mosaic_control import clicked_mosaic_cancel
-        model_cancel = ttk.Button(c, text='취소')
+        from oot.control.low_remove_control import clicked_revoke_image
+        model_cancel = ttk.Button(c, text='원상태 복원', command=clicked_revoke_image)
         model_cancel.pack(side='left')
 
     @classmethod
