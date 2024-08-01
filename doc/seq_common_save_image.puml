@@ -1,0 +1,22 @@
+@startuml Save Image
+    skinparam backgroundColor #EEEBDC
+    skinparam handwritten true
+    actor User
+    participant TopFrame
+    participant MiddleFrame
+    participant LowFrame
+    participant GuiManager
+    control Python.UI.Controller as Python.UI
+    participant top_control
+    database DataManager
+    User -> TopFrame : click '결과 저장'
+    TopFrame --> Python.UI : event
+    Python.UI -> top_control : clicked_save_output()
+    activate Python.UI
+    activate top_control
+    top_control -> DataManager : save_output_file()
+    DataManager --> top_control : return
+    top_control --> Python.UI : return
+    deactivate top_control
+    deactivate Python.UI
+@enduml
