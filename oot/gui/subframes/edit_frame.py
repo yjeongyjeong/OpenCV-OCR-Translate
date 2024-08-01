@@ -24,7 +24,7 @@ class EditFrame:
         self.current_brightness.set(0)
 
         # 밝기 조절 레이블 설정
-        brightness_label = ttk.Label(edit_tab, text='Contrast:')
+        brightness_label = ttk.Label(edit_tab, text='Brightness:')
         brightness_label.grid(row=0, column=0, padx=10, pady=(10, 5), sticky='ew')
         
         # 밝기 조절 슬라이더 설정
@@ -54,7 +54,7 @@ class EditFrame:
         self.current_contrast.set(0)
 
         # 대비 조절 레이블 설정
-        contrast_label = ttk.Label(edit_tab, text='Brightness:')
+        contrast_label = ttk.Label(edit_tab, text='Contrast:')
         contrast_label.grid(row=0, column=2, padx=10, pady=(10, 5), sticky='ew')
         
         # 대비 조절 슬라이더 설정
@@ -82,49 +82,68 @@ class EditFrame:
     # 밝기 변경 시 호출되는 함수
     def brightness_changed(self, event):
         self.brightness_value_label.config(text=self.get_current_value(self.current_brightness))
+        self.apply_changes()
 
     # 대비 변경 시 호출되는 함수
     def contrast_changed(self, event):
         self.contrast_value_label.config(text=self.get_current_value(self.current_contrast))
+        self.apply_changes()
 
+    def apply_changes(self):
         from oot.gui.middle_frame import MiddleFrame
         from oot.data.data_manager import DataManager
-
+        """
+        brightness_changed: 밝기 슬라이더의 값이 변경될 때 호출. 변경된 값을 레이블에 표시하고, 이미지에 적용
+        contrast_changed: 대비 슬라이더의 값이 변경될 때 호출. 변경된 값을 레이블에 표시하고, 이미지에 적용.
+        apply_changes: 밝기와 대비의 변경 사항을 이미지에 적용하고, 이를 사용자 인터페이스에 반영.
+        
+        """
         # out_file 경로 가져오기
         out_file = DataManager.get_output_file()
 
         # image 생성
         img = cv2.imread(out_file)
 
-        # slider 의 값에 따른 brightness 조정
-        img_cv2 = self.__change_brightness(img, value=int(float(event)))
+        # 밝기 조정
+        img_cv2 = self.__change_brightness(img, value=int(self.current_brightness.get()))
+
+        # 대비 조정
+        img_cv2 = self.__change_contrast(img_cv2, contrast=int(self.current_contrast.get()))
 
         # image 변환
         img_conv = Image.fromarray(img_cv2)
 
         # image 를 CanvasWorker 의 out 쪽 image로 세팅
-        from oot.gui.middle_frame import MiddleFrame
-        
-        # 이미지를 CanvasWorker 의 출력 쪽 이미지로 설정
         MiddleFrame.out_canvas_worker.set_image(img_conv)
         MiddleFrame.redraw_canvas_images()
 
     # 밝기 조절 함수
     def __change_brightness(self, input_image, value=0):
-        """
-        Reference: https://stackoverflow.com/questions/32609098/how-to-fast-change-image-brightness-with-python-opencv
-        Args:
-            input_image (numpy.ndarray): cv2.imread() 함수의 리턴 값으로 image data 의 numpy array 값과 같다.
-            value (int, optional): -50 ~ 50
-        Returns:
-            numpy.ndarray: cv2.cvtColor() 함수의 리턴 값으로 image data 의 numpy array 값과 같다.
-
-        """
         hsv = cv2.cvtColor(input_image, cv2.COLOR_BGR2HSV)
         h, s, v = cv2.split(hsv)
-        v = cv2.add(v,value)
+        v = cv2.add(v, value)
         v[v > 255] = 255
         v[v < 0] = 0
         final_hsv = cv2.merge((h, s, v))
         result_image = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2RGB)
+        return result_image
+
+    # 대비 조절 함수
+    def __change_contrast(self, input_image, contrast=0):
+        """
+        Args:
+            input_image (numpy.ndarray): cv2.imread() 함수의 리턴 값으로 image data 의 numpy array 값과 같다.
+            contrast (int): -50 ~ 50 범위의 슬라이더 값을 입력받아 대비를 조절
+        Returns:
+            numpy.ndarray: 대비 조절이 적용된 image data 의 numpy array 값.
+
+            alpha: 대비 조정을 위해 사용되는 스케일링 인자
+            alpha는 0부터 2 사이의 값으로 조절되며, 1보다 크면 대비가 증가하고, 1보다 작으면 대비가 감소
+        """
+        # contrast 값을 alpha로 변환 (대비 증가 시 1보다 크고, 감소 시 1보다 작게)
+        alpha = (contrast + 50) / 50.0
+        # 이미지의 평균 밝기를 계산
+        avg_luminance = np.mean(cv2.cvtColor(input_image, cv2.COLOR_BGR2GRAY))
+        # 대비 조정을 위해 이미지에 스케일링을 적용
+        result_image = cv2.convertScaleAbs(input_image, alpha=alpha, beta=(1 - alpha) * avg_luminance)
         return result_image
