@@ -245,9 +245,10 @@ class DataManager:
         return out_file
     
     @classmethod
-    def save_output_file(cls, src_file, out_image):  #src_file 인자필요없음(로그확인용) - 추후에 삭제예정
+    def save_output_file(cls, out_image):
         print ('[DataManager] save_output_file() called...')
-
+        src_file = cls.get_work_file().get_file_name()
+        
         # out_image는 PIL의 Image 객체
         if out_image is None:
             print ('[DataManager] save_output_file() : image is None, it can not be saved!')
