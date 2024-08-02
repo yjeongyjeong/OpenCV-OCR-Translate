@@ -71,6 +71,9 @@ def search_faces():
     scrollable_frame.reset(faces_names)
 
 def apply_mosaic(image, positions, mosaic_ratio=0.1):
+    from oot.gui.subframes.mosaic_frame import MosaicFrame
+    mosaic_ratio = float(MosaicFrame.combobox.get())
+    print("mosaic_ratio", mosaic_ratio)
     for (start_x, start_y, width, height) in positions:
         end_x = start_x + width
         end_y = start_y + height
@@ -80,5 +83,9 @@ def apply_mosaic(image, positions, mosaic_ratio=0.1):
 
 def clicked_mosaic_faces():
     from oot.gui.middle_frame import MiddleFrame
+    from oot.gui.subframes.mosaic_frame import MosaicFrame
+
     print('[low_remove_control] clicked_mosaic_faces() called!!...')
+
+    # Get the selected mosaic ratio from the combobox
     MiddleFrame.apply_mosaic_to_selected_faces()
