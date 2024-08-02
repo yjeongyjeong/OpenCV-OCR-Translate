@@ -1,5 +1,5 @@
 from tkinter import ttk
-
+import numpy as np
 from oot.gui.common import ScrollableList, ScrollableListType
 
 class MosaicFrame:
@@ -52,11 +52,11 @@ class MosaicFrame:
         combo_box = ttk.Combobox(b)
         combo_box.grid(column=0, row=1, columnspan=4, sticky='EW')
         
-        # !콤보박스 예시 - 추후 수정
-        font_size_list = tuple(range(5, 30))
-        combo_box['values'] = font_size_list
-        combo_box.current(5)
-        # end!
+        px_list = tuple(round(x, 1) for x in np.arange(0.1, 0.4, 0.1))
+        combo_box['values'] = px_list
+        combo_box.current(0)
+        MosaicFrame.combobox = combo_box
+        
         from oot.control.low_mosaic_control import clicked_mosaic_faces
         model_apply = ttk.Button(c, text='적용', command=clicked_mosaic_faces)
         model_apply.pack(side='left')
