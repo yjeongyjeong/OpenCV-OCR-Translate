@@ -41,13 +41,9 @@ class EditFrame:
         brightness_value_label = ttk.Label(edit_tab, text='Current Value:')
         brightness_value_label.grid(row=2, column=0, padx=10, pady=(10, 5), sticky='s')
         self.brightness_value_label = ttk.Label(edit_tab, text=self.get_current_value(self.current_brightness))
-        #self.brightness_value_label.grid(row=3, column=0, padx=10, pady=(5, 10), sticky='s')
+        self.brightness_value_label.grid(row=3, column=0, padx=10, pady=(5, 10), sticky='s')
 
-        # 밝기 값 입력란 추가
-        self.brightness_entry = ttk.Entry(edit_tab, textvariable=self.current_brightness, width=5)
-        self.brightness_entry.grid(row=4, column=0, padx=10, pady=(5, 10), sticky='s')
-        self.brightness_entry.bind("<Return>", self.update_brightness_from_entry)
-
+        
         # 구분선 설정
         separator = ttk.Separator(edit_tab, orient='vertical')
         separator.grid(row=0, column=1, rowspan=5, sticky='ns', padx=10)
@@ -76,13 +72,9 @@ class EditFrame:
         contrast_value_label = ttk.Label(edit_tab, text='Current Value:')
         contrast_value_label.grid(row=2, column=2, padx=10, pady=(10, 5), sticky='s')
         self.contrast_value_label = ttk.Label(edit_tab, text=self.get_current_value(self.current_contrast))
-        #self.contrast_value_label.grid(row=3, column=2, padx=10, pady=(5, 10), sticky='s')
+        self.contrast_value_label.grid(row=3, column=2, padx=10, pady=(5, 10), sticky='s')
 
-        # 대비 값 입력란 추가
-        self.contrast_entry = ttk.Entry(edit_tab, textvariable=self.current_contrast, width=5)
-        self.contrast_entry.grid(row=4, column=2, padx=10, pady=(5, 10), sticky='s')
-        self.contrast_entry.bind("<Return>", self.update_contrast_from_entry)
-
+        
     # 현재 변수 값 반환
     def get_current_value(self, variable):
         return f"{variable.get():.2f}"
@@ -96,22 +88,6 @@ class EditFrame:
     def contrast_changed(self, event):
         # 대비 값이 슬라이더에 의해 변경될 때 호출
         self.update_value(self.current_contrast, self.contrast_value_label)
-
-
-    def update_brightness_from_entry(self, event):
-        # 사용자가 밝기 값을 직접 입력했을 때 호출
-        value = float(self.brightness_entry.get())
-        if -50 <= value <= 50:
-            self.current_brightness.set(value)
-            self.update_value(self.current_brightness, self.brightness_value_label)
-
-
-    def update_contrast_from_entry(self, event):
-        # 사용자가 대비 값을 직접 입력했을 때 호출
-        value = float(self.contrast_entry.get())
-        if -50 <= value <= 50:
-            self.current_contrast.set(value)
-            self.update_value(self.current_contrast, self.contrast_value_label)
 
 
     def update_value(self, variable, label):
