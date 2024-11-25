@@ -18,6 +18,9 @@ def __check_work_folder(work_dir):
     ext = ['png', 'jpg', 'gif']
     target_files = []
     [target_files.extend(glob.glob(work_dir + '/' + '*.' + e)) for e in ext]
+    if len(work_dir) == 0:
+        mb.showinfo("알림", "사용자가 선택을 취소했습니다")
+        return False
     if len(target_files) == 0:
         mb.showerror("에러", "해당 폴더에는 이미지 파일이 없습니다")
         return False
