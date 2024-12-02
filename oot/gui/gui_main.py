@@ -35,15 +35,16 @@ class GuiManager:
         print('[ControlManager.changedWorkImage] work_img=', work_file.get_file_name())
         DataManager.set_work_file(work_file) # 현재 작업 파일을 업데이트
 
-        # clear all data in 'remove tab' of 'RemoveFrame'
-        from oot.gui.subframes.remove_frame import RemoveFrame
-        RemoveFrame.reset_remove_tab_data()
-        
-        # set texts to remove tab in 'WriteFrame'
+        # set texts to faster processing in 'RemoveFrame' and 'WriteFrame'
         if work_file.is_ocr_executed():
             texts = work_file.get_texts_as_string()
         else:
             texts=None
+
+        # clear all data in 'remove tab' of 'RemoveFrame'
+        from oot.gui.subframes.remove_frame import RemoveFrame
+        RemoveFrame.reset_remove_tab_data(texts)
+        
         # clear all data in 'write tab' of 'WriteFrame'
         from oot.gui.subframes.write_frame import WriteFrame
         WriteFrame.reset_write_tab_data(texts)
